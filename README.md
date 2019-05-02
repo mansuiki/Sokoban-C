@@ -1,11 +1,28 @@
 # Sokoban Game With C
 
-|  조원   |    학번    |Github|
-| :---: | :------: |:--:|
-|  김경택  | 20192805 |[mansuiki](https://github.com/mansuiki)|
-|  김현우  | 20192822 |[qualificationalitated](https://github.com/qualificationalitated)
-|  이정현  | 20192863 |[5d-jh](https://github.com/5d-jh)
-|  박민수  | 20192829 |[parkminsoo99](https://github.com/parkminsoo99)
+|  조원   |    학번    |                              Github                               |
+| :---: | :------: | :---------------------------------------------------------------: |
+|  김경택  | 20192805 |              [mansuiki](https://github.com/mansuiki)              |
+|  김현우  | 20192822 | [qualificationalitated](https://github.com/qualificationalitated) |  |
+|  이정현  | 20192863 |                 [5d-jh](https://github.com/5d-jh)                 |  |
+|  박민수  | 20192829 |          [parkminsoo99](https://github.com/parkminsoo99)          |  |
+
+------------
+## What We Need to Do?
+1. [ ] 맵 읽기
+2. [ ] 순위표
+3. [ ] 되돌리기 기능
+4. [ ] `캐릭터 움직이기`
+5. [ ] `상자 밀기`
+6. [ ] 현재 상태 저장 & 불러오기
+
+
+|  조원   |    학번    |     역할      |
+| :---: | :------: | :---------: |
+|  김경택  | 20192805 | 캐릭터 움직이기 구현 |
+|  김현우  | 20192822 |   되돌리기 구현   |
+|  이정현  | 20192863 | Save 기능 구현  |
+|  박민수  | 20192829 |   순위표 구현    |
 
 
 ------------
