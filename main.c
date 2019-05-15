@@ -136,48 +136,15 @@ int main(void)
 {
     load_map();
 
-    char map1[checkXsize(0)][checkYsize(0, checkXsize(0))];
-    char map2[checkXsize(1)][checkYsize(1, checkXsize(1))];
-    char map3[checkXsize(2)][checkYsize(2, checkXsize(2))];
-    char map4[checkXsize(3)][checkYsize(3, checkXsize(3))];
-    char map5[checkXsize(4)][checkYsize(4, checkXsize(4))];
-
-    for (int imap = 0; imap <= 4; imap++)
-    {
-        for (int ix = 0; ix < checkYsize(imap, checkXsize(imap)); ix++)
-        {
-            for (int iy = 0; iy < checkXsize(imap); iy++)
-            {
-                switch (imap)
-                {
-                    case 0:
-                        map1[ix][iy] = map[imap][ix][iy];
-                        printf("%c", map1[ix][iy]);
-                        break;
-                    case 1:
-                        map2[ix][iy] = map[imap][ix][iy];
-                        printf("%c", map2[ix][iy]);
-                        break;
-                    case 2:
-                        map3[ix][iy] = map[imap][ix][iy];
-                        printf("%c", map3[ix][iy]);
-                        break;
-                    case 3:
-                        map4[ix][iy] = map[imap][ix][iy];
-                        printf("%c", map4[ix][iy]);
-                        break;
-                    case 4:
-                        map5[ix][iy] = map[imap][ix][iy];
-                        printf("%c", map5[ix][iy]);
-                        break;
-                }
+    for (int imap = 0; imap <= 4; imap++) {
+        for (int ix = 0; ix < checkYsize(imap, checkXsize(imap)); ix++) {
+            for (int iy = 0; iy < checkXsize(imap); iy++) {
+                printf("%c", map[imap][ix][iy]);
             }
             printf("\n");
         }
         printf("\n\n");
     }
-
-
 
     return 0;
 }
