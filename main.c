@@ -114,14 +114,14 @@ int checkXsize(int imap) // 배열의 X 사이즈를 알아내는 함수
 }
 
 
-int checkYsize(int i1, int Xsize) // 배열의 Y 사이즈를 알아내는 함수
+int checkYsize(int imap, int Xsize) // 배열의 Y 사이즈를 알아내는 함수
 {
     int size = 0;
     int ix = Xsize - 1;
 
     for (int iy = 0; iy <= 29; iy++)
     {
-        if (map[i1][iy][ix] == 'C')
+        if (map[imap][iy][ix] == 'C')
         {
             size = iy;
             break;
@@ -136,10 +136,13 @@ int main(void)
 {
     load_map();
 
-    for (int imap = 0; imap <= 4; imap++) {
-        for (int ix = 0; ix < checkYsize(imap, checkXsize(imap)); ix++) {
-            for (int iy = 0; iy < checkXsize(imap); iy++) {
-                printf("%c", map[imap][ix][iy]);
+    for (int imap = 0; imap <= 4; imap++)
+    {
+        for (int iy = 0; iy < checkYsize(imap, checkXsize(imap)); iy++)
+        {
+            for (int ix = 0; ix < checkXsize(imap); ix++)
+            {
+                printf("%c", map[imap][iy][ix]);
             }
             printf("\n");
         }
