@@ -177,11 +177,16 @@ void get_player_pos(int imap) // 플레이어의 위치를 찾는 함수
 
 
 
-void move_player(char move) // 플레이어를 움직이는 함수
+void move_player(char move,int imap) // 플레이어를 움직이는 함수
 {
-    //일단 상하좌우
-    //맵파일에 골뱅이 위치를 우선 지우고
-    nowPlayMap[current_player_pos[1]][current_player_pos[0]] = '.';
+    if(map[imap][current_player_pos[1]][current_player_pos[0]]=='O') // 만약 플레이어가 있던 위치가 원래는 O 였으면(대문자 o)
+    {
+        nowPlayMap[current_player_pos[1]][current_player_pos[0]] = 'O'; // O 로 변경
+    }
+    else
+    {
+        nowPlayMap[current_player_pos[1]][current_player_pos[0]] = '.'; // 아니면 .d으로 변경
+    }
 
     switch (move)
     {
@@ -202,26 +207,95 @@ void move_player(char move) // 플레이어를 움직이는 함수
     // 골뱅이 위치를 새로 찍어주고
     nowPlayMap[current_player_pos[1]][current_player_pos[0]] = '@';
 }
-
-void decide_move(char c) //앞에 있는 물체를 확인하고 움직임 여부를 결정하는 함수
+void move_box(char c,int imap) // 플레이어 이동방향 앞에 박스가 존재할경우를 검사. 박스의 앞에 벽이나 또다른 박스가 있다면 움직이지 않습니다.
+{
+    //달러 앞을 확인
+    switch (c)
+    {
+        case 'h':// 좌
+            if (nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] != '#' && nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] != '$' )
+            {
+                nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] = '$';
+                move_player(c,imap);
+            }
+            break;
+        case 'j':// 하
+            if (nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] != '#' && nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] != '$' )
+            {
+                nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] = '$';
+                move_player(c,imap);
+            }
+            break;
+        case 'k':// 상
+            if (nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] != '#' && nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] != '$' )
+            {
+                nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] = '$';
+                move_player(c,imap);
+            }
+            break;
+        case 'l' :// 우
+            if (nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] != '#' && nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] != '$' )
+            {
+                nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] = '$';
+                move_player(c,imap);
+            }
+            break;
+    }
+}
+void decide_move(char c,int imap) //앞에 있는 물체를 확인하고 움직임 여부를 결정하는 함수
 {
     switch (c)
     {
         case 'h':// 좌
             if (nowPlayMap[current_player_pos[1]][current_player_pos[0]-1] != '#')
-                move_player(c);
+            {
+                if(nowPlayMap[current_player_pos[1]][current_player_pos[0]-1] == '$') {
+                    move_box(c,imap);
+                }
+                else
+                {
+                    move_player(c,imap);
+                }
+            }
             break;
         case 'j':// 하
             if (nowPlayMap[current_player_pos[1]+1][current_player_pos[0]] != '#')
-                move_player(c);
+            {
+                if (nowPlayMap[current_player_pos[1]+1][current_player_pos[0]] == '$')
+                {
+                    move_box(c,imap);
+                }
+                else
+                {
+                    move_player(c,imap);
+                }
+            }
             break;
         case 'k':// 상
             if (nowPlayMap[current_player_pos[1]-1][current_player_pos[0]] != '#')
-                move_player(c);
+            {
+                if (nowPlayMap[current_player_pos[1]-1][current_player_pos[0]] == '$')
+                {
+                    move_box(c,imap);
+                }
+                else
+                {
+                    move_player(c,imap);
+                }
+            }
             break;
         case 'l' :// 우
             if (nowPlayMap[current_player_pos[1]][current_player_pos[0]+1] != '#')
-                move_player(c);
+            {
+                if (nowPlayMap[current_player_pos[1]][current_player_pos[0]+1] == '$')
+                {
+                    move_box(c,imap);
+                }
+                else
+                {
+                    move_player(c,imap);
+                }
+            }
             break;
     }
 }
@@ -252,6 +326,15 @@ void selectmap(int imap) // 플레이할 맵을 선택
     get_player_pos(imap);
 }
 
+void newgame(void) // 첫 번쨰 맵부터 다시 시작
+{
+    int imap=0;
+
+    selectmap(imap);
+    printmap(imap);
+}
+
+
 int main(void)
 {
     char command;
@@ -268,10 +351,16 @@ int main(void)
     {
         // 맵파일 1번으로 가정
         command = getch();
-        decide_move(command);
+        switch(command)
+        {
+            case 'n':
+                newgame();
+                break;
+        }
+        decide_move(command,imap);
         printmap(imap);
         // TESTING
-        i++;
+        // i++;
     }
 
     return 0;
