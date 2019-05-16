@@ -1,8 +1,10 @@
 #include <stdio.h>
+#include <conio.h>
 #define true 1
 #define false 0
 
 char map[5][30][30]; // load_map 에 temp 변수를 가공하여 저장하는 변수
+char nowPlayMap[30][30] = {NULL, };
 int current_player_pos[2];
 
 
@@ -150,11 +152,31 @@ void get_player_pos(int imap)
     }
 }
 
+void move_player(char c)
+{
+    //일단 상하좌우
+    //맵파일에 골뱅이 위치를 우선 지우고
+    nowPlayMap[current_player_pos[0]][current_player_pos[1]] = '.';
+    switch (c)
+    {
+        case 'h':// 좌
+            current_player_pos[0]-=1;
+        case 'j':// 하
+            current_player_pos[1]+=1
+        case 'k':// 상
+            current_player_pos[1]-=1;
+        case 'l' :// 우
+            current_player_pos[0]+=1;
+    }
+    // 골뱅이 위치를 새로 찍어주고
+    nowPlayMap[current_player_pos[0]][current_player_pos[1]] = '@';
+}
 
 int main(void)
 {
+    char command;
     load_map();
-
+    /*
     for (int imap = 0; imap <= 4; imap++)
     {
         get_player_pos(imap);
@@ -169,6 +191,14 @@ int main(void)
         }
         printf("\n\n");
     }
+    */
+    while(1)
+    {
 
+        // 맵파일 1번으로 가정
+        command = getch();
+        move_player(command);
+        //
+    }
     return 0;
 }
