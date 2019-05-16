@@ -2,8 +2,7 @@
 #define true 1
 #define false 0
 
-char temp[5][30][30]; // 처음 맵파일을 읽어와 데이터를 저장하는 변수
-char map[5][30][30]; // temp 변수를 가공하여 저장하는 변수
+char map[5][30][30]; // load_map 에 temp 변수를 가공하여 저장하는 변수
 int current_player_pos[2];
 
 
@@ -11,11 +10,13 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
 {
     FILE *ifp;
     /*
+     * temp: 처음 맵파일을 읽어와 데이터를 저장하는 변수
      * imap: 맵 번호
      * iy: 맵의 행(Y축) 번호
      * ix: 맵의 열(X축) 번호
      * will_load: 문자 로드 여부를 설정하는 변수
     */
+    char temp[5][30][30] = {NULL, };
     int imap = 0, iy = 0, ix = 0, c = 0;
     _Bool will_load = false;
     ifp = fopen("map", "r");
