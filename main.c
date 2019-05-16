@@ -140,6 +140,7 @@ int checkXsize(int imap) // 배열의 X 사이즈를 알아내는 함수
 }
 
 
+
 int checkYsize(int imap, int Xsize) // 배열의 Y 사이즈를 알아내는 함수
 {
     int size = 0;
@@ -174,6 +175,8 @@ void get_player_pos(int imap) // 플레이어의 위치를 찾는 함수
     }
 }
 
+
+
 void move_player(char move) // 플레이어를 움직이는 함수
 {
     //일단 상하좌우
@@ -198,6 +201,29 @@ void move_player(char move) // 플레이어를 움직이는 함수
 
     // 골뱅이 위치를 새로 찍어주고
     nowPlayMap[current_player_pos[1]][current_player_pos[0]] = '@';
+}
+
+void decide_move(char c) //앞에 있는 물체를 확인하고 움직임 여부를 결정하는 함수
+{
+    switch (c)
+    {
+        case 'h':// 좌
+            if (nowPlayMap[current_player_pos[1]][current_player_pos[0]-1] != '#')
+                move_player(c);
+            break;
+        case 'j':// 하
+            if (nowPlayMap[current_player_pos[1]+1][current_player_pos[0]] != '#')
+                move_player(c);
+            break;
+        case 'k':// 상
+            if (nowPlayMap[current_player_pos[1]-1][current_player_pos[0]] != '#')
+                move_player(c);
+            break;
+        case 'l' :// 우
+            if (nowPlayMap[current_player_pos[1]][current_player_pos[0]+1] != '#')
+                move_player(c);
+            break;
+    }
 }
 
 void printmap(int imap) // 현재 플레이하고 있는 맵을 출력
@@ -238,11 +264,11 @@ int main(void)
     selectmap(imap);
     printmap(imap);
 
-    while(i != 10)
+    while(1)
     {
         // 맵파일 1번으로 가정
         command = getch();
-        move_player(command);
+        decide_move(command);
         printmap(imap);
         // TESTING
         i++;
