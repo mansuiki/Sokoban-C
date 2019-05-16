@@ -53,7 +53,7 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
 
             case '5':
                 imap = 4;
-                ix = 0;
+                iy = 0;
                 ix = 0;
                 will_load = false;
                 break;
