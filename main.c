@@ -4,6 +4,7 @@
 
 char temp[5][30][30]; // 처음 맵파일을 읽어와 데이터를 저장하는 변수
 char map[5][30][30]; // temp 변수를 가공하여 저장하는 변수
+int current_player_pos[2];
 
 
 void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하고 가공하여 map 에 저장하는 함수
@@ -131,6 +132,23 @@ int checkYsize(int imap, int Xsize) // 배열의 Y 사이즈를 알아내는 함
     return size;
 }
 
+void get_player_pos(int imap)
+{
+    for (int iy = 0; iy < checkYsize(imap, checkXsize(imap)); iy++)
+    {
+        for (int ix = 0; ix < checkXsize(imap); ix++)
+        {
+            switch(map[imap][iy][ix])
+            {
+                case '@':
+                    current_player_pos[0] = ix;
+                    current_player_pos[1] = iy;
+            }
+        }
+        printf("\n");
+    }
+}
+
 
 int main(void)
 {
@@ -138,6 +156,8 @@ int main(void)
 
     for (int imap = 0; imap <= 4; imap++)
     {
+        get_player_pos(imap);
+        printf("PLAYER_POSITION: %d, %d\n", current_player_pos[0], current_player_pos[1]);
         for (int iy = 0; iy < checkYsize(imap, checkXsize(imap)); iy++)
         {
             for (int ix = 0; ix < checkXsize(imap); ix++)
