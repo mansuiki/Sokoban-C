@@ -326,6 +326,15 @@ void selectmap(int imap) // 플레이할 맵을 선택
     get_player_pos(imap);
 }
 
+void newgame(void) // 첫 번쨰 맵부터 다시 시작
+{
+    int imap=0;
+
+    selectmap(imap);
+    printmap(imap);
+}
+
+
 int main(void)
 {
     char command;
@@ -342,6 +351,12 @@ int main(void)
     {
         // 맵파일 1번으로 가정
         command = getch();
+        switch(command)
+        {
+            case 'n':
+                newgame();
+                break;
+        }
         decide_move(command,imap);
         printmap(imap);
         // TESTING
