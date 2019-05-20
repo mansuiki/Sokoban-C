@@ -7,6 +7,9 @@ char map[5][30][30]; // load_map 에 temp 변수를 가공하여 저장하는 �
 char nowPlayMap[30][30] = {NULL, }; // 현재 플레이하고 있는 맵을 저장하는 변수
 int current_player_pos[2]; // 플레이어의 위치를 저장하는 변수
 int current_goals; //목표지점의 개수
+int current_map_no;
+
+void selectmap(int imap);
 
 int getch(void) // 리눅스에서 getch() 사용을 위한 함수
 {
@@ -188,15 +191,13 @@ void check_goals(int imap)
         }
     }
 
-    printf("GOALS ACHIEVED: %d\nCURR GOALS: %d\n", goals_achieved, current_goals);
-
     if (goals_achieved == current_goals)
-        printf("==YOU WIN==\n");
+        selectmap(++current_map_no);
 }
 
 void move_player(char move,int imap) // 플레이어를 움직이는 함수
 {
-    check_goals(imap); //상자가 움직일 때마다 골 여부 확인
+    check_goals(imap); //플레이어가 움직일 때마다 골 여부 확인
 
     if(map[imap][current_player_pos[1]][current_player_pos[0]]=='O') // 만약 플레이어가 있던 위치가 원래는 O 였으면(대문자 o)
     {
@@ -349,7 +350,7 @@ void selectmap(int imap) // 플레이할 맵을 선택
         }
     }
 
-    get_player_pos(imap);
+    get_player_pos(current_map_no);
 }
 
 void newgame(void) // 첫 번쨰 맵부터 다시 시작
@@ -368,10 +369,10 @@ int main(void)
 
     load_map();
 
-    int i = 0;
+    current_map_no = 0;
 
-    selectmap(imap);
-    printmap(imap);
+    selectmap(current_map_no);
+    printmap(current_map_no);
 
     while(1)
     {
@@ -383,8 +384,8 @@ int main(void)
                 newgame();
                 break;
         }
-        decide_move(command,imap);
-        printmap(imap);
+        decide_move(command, imap);
+        printmap(current_map_no);
         // TESTING
         // i++;
     }
