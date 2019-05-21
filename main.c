@@ -49,7 +49,7 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
     _Bool will_load = false;
     ifp = fopen("map", "r");
 
-    while ((c = getc(ifp)) != EOF)
+    while ((c = getc(ifp)) != EOF) // 맵파일을 불러옵니다
     {
         switch (c)
         {
@@ -203,7 +203,7 @@ void move_player(char move,int imap) // 플레이어를 움직이는 함수
     }
     else
     {
-        nowPlayMap[current_player_pos[1]][current_player_pos[0]] = '.'; // 아니면 .d으로 변경
+        nowPlayMap[current_player_pos[1]][current_player_pos[0]] = '.'; // 아니면 .으로 변경
     }
 
     switch (move)
@@ -221,7 +221,7 @@ void move_player(char move,int imap) // 플레이어를 움직이는 함수
             current_player_pos[0]+=1;
             break;
     }
-
+  
     // 골뱅이 위치를 새로 찍어주고
     nowPlayMap[current_player_pos[1]][current_player_pos[0]] = '@';
 
@@ -230,7 +230,6 @@ void move_player(char move,int imap) // 플레이어를 움직이는 함수
 
 void move_box(char c,int imap) // 플레이어 이동방향 앞에 박스가 존재할경우를 검사. 박스의 앞에 벽이나 또다른 박스가 있다면 움직이지 않습니다.
 {
-    //달러 앞을 확인
     switch (c)
     {
         case 'h':// 좌
@@ -376,7 +375,7 @@ int main(void)
 
     while(1)
     {
-        // 맵파일 1번으로 가정
+        // 맵파일 1번으로 가정, 추후 맵 선택 기능 추가 예정
         command = getch();
         switch(command)
         {
