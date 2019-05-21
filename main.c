@@ -6,6 +6,10 @@
 char map[5][30][30]; // load_map 에 temp 변수를 가공하여 저장하는 변수
 char nowPlayMap[30][30] = {NULL, }; // 현재 플레이하고 있는 맵을 저장하는 변수
 int current_player_pos[2]; // 플레이어의 위치를 저장하는 변수
+int current_goals = 0; //목표지점의 개수
+int current_map_no;
+
+void selectmap(int imap);
 
 int getch(void) // 리눅스에서 getch() 사용을 위한 함수
 {
@@ -175,7 +179,21 @@ void get_player_pos(int imap) // 플레이어의 위치를 찾는 함수
     }
 }
 
+void check_goals(int imap)
+{
+    int goals_achieved = 0;
+    for (int iy = 0; iy < checkYsize(imap, checkXsize(imap)); iy++)
+    {
+        for (int ix = 0; ix < checkXsize(imap); ix++)
+        {
+            if ((nowPlayMap[iy][ix] == '$') && (map[imap][iy][ix] == 'O'))
+                goals_achieved ++;
+        }
+    }
 
+    if (goals_achieved == current_goals)
+        selectmap(++current_map_no);
+}
 
 void move_player(char move,int imap) // 플레이어를 움직이는 함수
 {
@@ -203,10 +221,14 @@ void move_player(char move,int imap) // 플레이어를 움직이는 함수
             current_player_pos[0]+=1;
             break;
     }
+  
+    // 골뱅이 위치를 새로 찍어주고
+    nowPlayMap[current_player_pos[1]][current_player_pos[0]] = '@';
 
-    nowPlayMap[current_player_pos[1]][current_player_pos[0]] = '@'; // 플레이어 이동을 표현
+    check_goals(imap); //플레이어가 움직일 때마다 골 여부 확인
 }
-void move_box(char c,int imap) // 1. 플레이어 이동방향 앞에 박스가 존재하는가를 검사. 2. 박스의 앞에 벽이나 또다른 박스가 있다면 움직이지 않습니다.
+
+void move_box(char c,int imap) // 플레이어 이동방향 앞에 박스가 존재할경우를 검사. 박스의 앞에 벽이나 또다른 박스가 있다면 움직이지 않습니다.
 {
     switch (c)
     {
@@ -240,19 +262,21 @@ void move_box(char c,int imap) // 1. 플레이어 이동방향 앞에 박스가 
             break;
     }
 }
-void decide_move(char c,int imap) //앞에 있는 물체를 확인하고 움직임 여부를 결정하는 함수
+
+void decide_move(char c, int imap) //앞에 있는 물체를 확인하고 움직임 여부를 결정하는 함수
 {
     switch (c)
     {
         case 'h':// 좌
             if (nowPlayMap[current_player_pos[1]][current_player_pos[0]-1] != '#')
             {
-                if(nowPlayMap[current_player_pos[1]][current_player_pos[0]-1] == '$') {
-                    move_box(c,imap);
+                if(nowPlayMap[current_player_pos[1]][current_player_pos[0]-1] == '$')
+                {
+                    move_box(c, imap);
                 }
                 else
                 {
-                    move_player(c,imap);
+                    move_player(c, imap);
                 }
             }
             break;
@@ -261,11 +285,11 @@ void decide_move(char c,int imap) //앞에 있는 물체를 확인하고 움직�
             {
                 if (nowPlayMap[current_player_pos[1]+1][current_player_pos[0]] == '$')
                 {
-                    move_box(c,imap);
+                    move_box(c, imap);
                 }
                 else
                 {
-                    move_player(c,imap);
+                    move_player(c, imap);
                 }
             }
             break;
@@ -274,11 +298,11 @@ void decide_move(char c,int imap) //앞에 있는 물체를 확인하고 움직�
             {
                 if (nowPlayMap[current_player_pos[1]-1][current_player_pos[0]] == '$')
                 {
-                    move_box(c,imap);
+                    move_box(c, imap);
                 }
                 else
                 {
-                    move_player(c,imap);
+                    move_player(c, imap);
                 }
             }
             break;
@@ -287,11 +311,11 @@ void decide_move(char c,int imap) //앞에 있는 물체를 확인하고 움직�
             {
                 if (nowPlayMap[current_player_pos[1]][current_player_pos[0]+1] == '$')
                 {
-                    move_box(c,imap);
+                    move_box(c, imap);
                 }
                 else
                 {
-                    move_player(c,imap);
+                    move_player(c, imap);
                 }
             }
             break;
@@ -318,10 +342,14 @@ void selectmap(int imap) // 플레이할 맵을 선택
         for (int ix = 0; ix < checkXsize(imap); ix++)
         {
             nowPlayMap[iy][ix] = map[imap][iy][ix];
+
+            //목표 지점 카운팅
+            if (nowPlayMap[iy][ix] == 'O')
+                current_goals ++;
         }
     }
 
-    get_player_pos(imap);
+    get_player_pos(current_map_no);
 }
 
 void newgame(void) // 첫 번쨰 맵부터 다시 시작
@@ -340,10 +368,10 @@ int main(void)
 
     load_map();
 
-    int i = 0;
+    current_map_no = 0;
 
-    selectmap(imap);
-    printmap(imap);
+    selectmap(current_map_no);
+    printmap(current_map_no);
 
     while(1)
     {
@@ -355,8 +383,8 @@ int main(void)
                 newgame();
                 break;
         }
-        decide_move(command,imap);
-        printmap(imap);
+        decide_move(command, imap);
+        printmap(current_map_no);
         // TESTING
         // i++;
     }
