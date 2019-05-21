@@ -8,6 +8,15 @@ char nowPlayMap[30][30] = {NULL, }; // 현재 플레이하고 있는 맵을 저�
 int current_player_pos[2]; // 플레이어의 위치를 저장하는 변수
 int current_goals = 0; //목표지점의 개수
 int current_map_no;
+_Bool check_error = 0;
+
+_Bool check_mapfile(int n,int m) // 맵파일의 박스와 골인지점의 수를 검사하여, 수가 다르다면 오류를 출력함
+{
+    if(n==m)
+        return 1;
+    else
+        return 0;
+}
 
 void selectmap(int imap);
 
@@ -43,13 +52,17 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
      * iy: 맵의 행(Y축) 번호
      * ix: 맵의 열(X축) 번호
      * will_load: 문자 로드 여부를 설정하는 변수
+     * check_box: 맵파일의 박스의 갯수를 확인하는 변수
+     * check_goals: 맵파일에 골의 위치를 확인하는 변수
+     * check_error: 맵의 박스와 골의 위치를 확인하며 에러를 판별하는 변수
     */
     char temp[5][30][30] = {NULL, };
     int imap = 0, iy = 0, ix = 0, c = 0;
+    int check_box=0,check_goals=0;
     _Bool will_load = false;
     ifp = fopen("map", "r");
 
-    while ((c = getc(ifp)) != EOF) // 맵파일을 불러옵니다
+    while ((c = getc(ifp)) != EOF)
     {
         switch (c)
         {
@@ -64,6 +77,10 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
                 imap = 1;
                 iy = 0;
                 ix = 0;
+                if(!(check_mapfile(check_box,check_goals)))
+                    check_error=1;
+                check_box=0;
+                check_goals=0;
                 will_load = false;
                 break;
 
@@ -71,6 +88,10 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
                 imap = 2;
                 iy = 0;
                 ix = 0;
+                if(!(check_mapfile(check_box,check_goals)))
+                    check_error=1;
+                check_box=0;
+                check_goals=0;
                 will_load = false;
                 break;
 
@@ -78,6 +99,10 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
                 imap = 3;
                 iy = 0;
                 ix = 0;
+                if(!(check_mapfile(check_box,check_goals)))
+                    check_error=1;
+                check_box=0;
+                check_goals=0;
                 will_load = false;
                 break;
 
@@ -85,6 +110,10 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
                 imap = 4;
                 iy = 0;
                 ix = 0;
+                if(!(check_mapfile(check_box,check_goals)))
+                    check_error=1;
+                check_box=0;
+                check_goals=0;
                 will_load = false;
                 break;
 
@@ -98,11 +127,19 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
                 break;
 
             case 'e':
+                if(!(check_mapfile(check_box,check_goals)))
+                    check_error=1;
+                check_box=0;
+                check_goals=0;
                 goto load_map_end;
 
             default:
                 temp[imap][iy][ix] = c;
                 ix++;
+                if(c=='$')
+                    check_box++;
+                else if(c=='O')
+                    check_goals++;
                 break;
         }
     }
@@ -110,6 +147,10 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
     load_map_end:
 
     fclose(ifp);
+    if(check_error==1) {
+        printf("Error");
+        return;
+    }
 
     for (int i1 = 0; i1 <= 4; i1++)
     {
