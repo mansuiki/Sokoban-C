@@ -147,7 +147,7 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
     load_map_end:
 
     fclose(ifp);
-    if(check_error==1) {
+    if(check_error == 1) {
         printf("Error");
         return;
     }
@@ -408,6 +408,9 @@ int main(void)
     int imap = 0;
 
     load_map();
+
+    if (check_error == 1)
+        return 0;
 
     current_map_no = 0;
 
