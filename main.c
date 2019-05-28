@@ -19,6 +19,7 @@ _Bool check_mapfile(int n,int m) // 맵파일의 박스와 골인지점의 수�
 }
 
 void selectmap(int imap);
+void record_history(char move);
 
 int getch(void) // 리눅스에서 getch() 사용을 위한 함수
 {
@@ -236,7 +237,7 @@ void check_goals(int imap)
         selectmap(++current_map_no);
 }
 
-void move_player(char move,int imap) // 플레이어를 움직이는 함수
+void move_player(char move, int imap) // 플레이어를 움직이는 함수
 {
     if(map[imap][current_player_pos[1]][current_player_pos[0]]=='O') // 만약 플레이어가 있던 위치가 원래는 O 였으면(대문자 o)
     {
@@ -251,15 +252,19 @@ void move_player(char move,int imap) // 플레이어를 움직이는 함수
     {
         case 'h':// 좌
             current_player_pos[0]-=1;
+            record_history('l');
             break;
         case 'j':// 하
             current_player_pos[1]+=1;
+            record_history('k');
             break;
         case 'k':// 상
             current_player_pos[1]-=1;
+            record_history('j');
             break;
         case 'l' :// 우
             current_player_pos[0]+=1;
+            record_history('h');
             break;
     }
   
@@ -269,7 +274,7 @@ void move_player(char move,int imap) // 플레이어를 움직이는 함수
     check_goals(imap); //플레이어가 움직일 때마다 골 여부 확인
 }
 
-void move_box(char c,int imap) // 플레이어 이동방향 앞에 박스가 존재할경우를 검사. 박스의 앞에 벽이나 또다른 박스가 있다면 움직이지 않습니다.
+void move_box(char c, int imap) // 플레이어 이동방향 앞에 박스가 존재할경우를 검사. 박스의 앞에 벽이나 또다른 박스가 있다면 움직이지 않습니다.
 {
     switch (c)
     {
@@ -401,6 +406,44 @@ void newgame(void) // 첫 번쨰 맵부터 다시 시작
     printmap(imap);
 }
 
+int history_idx = 0; //history 배열을 거꾸로 읽는 변수
+char history[5] = {'\0'}; //움직임 명령을 반대로 기록해서 5개 저장하는 변수. 저장은 큐로, 읽기는 스택으로
+_Bool is_undoing = false; //플레이어의 움직임이 undo인지 일반 커맨드인지 구별하는 변수
+
+void record_history(char move) //플레이어의 움직임을 기록하는 함수
+{
+    static int past_overwrite_cnt; //history_idx가 record 과정에서 감소할지 여부를 결정하는 변수
+
+    if (!is_undoing && history_idx <= 4)
+    {
+        if (history_idx == 0)
+            past_overwrite_cnt = 0;
+
+        if (history_idx >= 0)
+            past_overwrite_cnt ++;
+
+        if (past_overwrite_cnt >= 4-history_idx || history_idx > 0)
+            history_idx --;
+
+        //일반 커맨드를 입력받았을 경우
+        for (int i = 0; i <= 4-history_idx; ++i)
+            history[i] = history[i+1];
+
+        history[4-history_idx] = move;
+    }
+}
+
+void undo(void)
+{
+    if (history_idx < 4 && history[4-history_idx] != '\0')
+    {
+        is_undoing = true;
+        decide_move(history[4-history_idx], current_map_no);
+
+        history_idx ++;
+    }
+}
+
 
 int main(void)
 {
@@ -426,12 +469,23 @@ int main(void)
     {
         // 맵파일 1번으로 가정, 추후 맵 선택 기능 추가 예정
         command = getch();
+        printf("idx: %d\n", history_idx);
+        for (int i = 0; i <= 4; ++i) {
+            printf("%c", history[i]);
+        }
+        printf("\n");
+
         switch(command)
         {
             case 'n':
                 newgame();
                 break;
+            case 'u':
+                undo();
         }
+
+        is_undoing = false;
+
         decide_move(command, imap);
         printmap(current_map_no);
         // TESTING
