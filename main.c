@@ -1,5 +1,6 @@
 #include <termios.h>
 #include <stdio.h>
+#include <stdlib.h>
 #define true 1
 #define false 0
 
@@ -370,6 +371,7 @@ void decide_move(char c, int imap) //앞에 있는 물체를 확인하고 움직
 
 void printmap(int imap) // 현재 플레이하고 있는 맵을 출력
 {
+    system("clear");
     for (int iy = 0; iy < checkYsize(imap, checkXsize(imap)); iy++)
     {
         for (int ix = 0; ix < checkXsize(imap); ix++)
@@ -378,7 +380,6 @@ void printmap(int imap) // 현재 플레이하고 있는 맵을 출력
         }
         printf("\n");
     }
-    printf("\n\n");
 }
 
 void selectmap(int imap) // 플레이할 맵을 선택
@@ -446,17 +447,12 @@ int main(void)
     current_map_no = 0;
 
     selectmap(current_map_no);
-    printmap(current_map_no);
+    //printmap(current_map_no);
 
     while(1)
     {
         // 맵파일 1번으로 가정, 추후 맵 선택 기능 추가 예정
         command = getch();
-        printf("history: ");
-        for (int i = 0; i <= 4; ++i) {
-            printf("%c", history[i]);
-        }
-        printf("\n");
 
         switch(command)
         {
@@ -472,6 +468,12 @@ int main(void)
 
         decide_move(command, imap);
         printmap(current_map_no);
+
+        printf("history: ");
+        for (int i = 0; i <= 4; ++i) {
+            printf("%c", history[i]);
+        }
+        printf("\n");
         // TESTING
         // i++;
     }
