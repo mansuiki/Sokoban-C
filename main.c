@@ -406,11 +406,16 @@ int main(void)
 {
     char command;
     int imap = 0;
+    char name[10] = {'\0'};
 
     load_map();
 
     if (check_error == 1)
         return 0;
+
+    printf("이름을 입력해주세요 : ");
+    scanf("%10s", name);
+    printf("%s", name);
 
     current_map_no = 0;
 
