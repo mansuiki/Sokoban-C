@@ -406,44 +406,27 @@ void newgame(void) // 첫 번쨰 맵부터 다시 시작
     printmap(imap);
 }
 
-int history_idx = 0; //history 배열을 거꾸로 읽는 변수
-char history[5] = {'\0'}; //움직임 명령을 반대로 기록해서 5개 저장하는 변수. 저장은 큐로, 읽기는 스택으로
+char history[5] = {'\0'}; //움직임 명령을 반대로 기록해서 5개 저장하는 스택 변수
 _Bool is_undoing = false; //플레이어의 움직임이 undo인지 일반 커맨드인지 구별하는 변수
 
 void record_history(char move) //플레이어의 움직임을 기록하는 함수
 {
-    static int past_overwrite_cnt; //history_idx가 record 과정에서 감소할지 여부를 결정하는 변수
-
-    if (!is_undoing && history_idx <= 4)
+    if (is_undoing)
     {
-        if (history_idx == 0)
-            past_overwrite_cnt = 0;
+        for (int i = 3; i >= 0; --i)
+            history[i+1] = history[i];
 
-        if (history_idx >= 0)
-            past_overwrite_cnt ++;
-
-        if (past_overwrite_cnt >= 4-history_idx || history_idx > 0)
-            history_idx --;
-
+        history[0] = '\0';
+    }
+    else
+    {
         //일반 커맨드를 입력받았을 경우
-        for (int i = 0; i <= 4-history_idx; ++i)
+        for (int i = 0; i <= 3; ++i)
             history[i] = history[i+1];
 
-        history[4-history_idx] = move;
+        history[4] = move;
     }
 }
-
-void undo(void)
-{
-    if (history_idx < 4 && history[4-history_idx] != '\0')
-    {
-        is_undoing = true;
-        decide_move(history[4-history_idx], current_map_no);
-
-        history_idx ++;
-    }
-}
-
 
 int main(void)
 {
@@ -469,7 +452,7 @@ int main(void)
     {
         // 맵파일 1번으로 가정, 추후 맵 선택 기능 추가 예정
         command = getch();
-        printf("idx: %d\n", history_idx);
+        printf("history: ");
         for (int i = 0; i <= 4; ++i) {
             printf("%c", history[i]);
         }
@@ -481,7 +464,8 @@ int main(void)
                 newgame();
                 break;
             case 'u':
-                undo();
+                is_undoing = true;
+                decide_move(history[4], current_map_no);
         }
 
         is_undoing = false;
