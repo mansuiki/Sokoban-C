@@ -9,7 +9,8 @@ char nowPlayMap[30][30] = {NULL, }; // 현재 플레이하고 있는 맵을 저�
 int current_player_pos[2]; // 플레이어의 위치를 저장하는 변수
 int current_goals = 0; //목표지점의 개수
 int current_map_no;
-_Bool check_error = 0;
+_Bool check_error = 0; // 에러 확인
+int undo_counting=0; // 되돌아 갈수 있는 횟수를 알려주는 변수
 
 _Bool check_mapfile(int n,int m) // 맵파일의 박스와 골인지점의 수를 검사하여, 수가 다르다면 오류를 출력함
 {
@@ -253,25 +254,25 @@ void move_player(char move, int imap) // 플레이어를 움직이는 함수
     {
         case 'h':// 좌
             current_player_pos[0]-=1;
-            handle_history(false);
+            undo_counting++;
             break;
         case 'j':// 하
             current_player_pos[1]+=1;
-            handle_history(false);
+            undo_counting++;
             break;
         case 'k':// 상
             current_player_pos[1]-=1;
-            handle_history(false);
+            undo_counting++;
             break;
         case 'l' :// 우
             current_player_pos[0]+=1;
-            handle_history(false);
+            undo_counting++;
             break;
     }
   
     // 골뱅이 위치를 새로 찍어주고
     nowPlayMap[current_player_pos[1]][current_player_pos[0]] = '@';
-
+    handle_history(false);
     check_goals(imap); //플레이어가 움직일 때마다 골 여부 확인
 }
 
@@ -283,7 +284,7 @@ void move_box(char c, int imap) // 플레이어 이동방향 앞에 박스가 �
             if (nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] != '#' && nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] != '$' )
             {
                 nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] = '$';
-
+                nowPlayMap[current_player_pos[1]][current_player_pos[0]-1] = '.';
                 move_player(c,imap);
             }
             break;
@@ -291,6 +292,7 @@ void move_box(char c, int imap) // 플레이어 이동방향 앞에 박스가 �
             if (nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] != '#' && nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] != '$' )
             {
                 nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] = '$';
+                nowPlayMap[current_player_pos[1]+1][current_player_pos[0]] = '.';
                 move_player(c,imap);
             }
             break;
@@ -298,6 +300,7 @@ void move_box(char c, int imap) // 플레이어 이동방향 앞에 박스가 �
             if (nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] != '#' && nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] != '$' )
             {
                 nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] = '$';
+                nowPlayMap[current_player_pos[1]-1][current_player_pos[0]] = '.';
                 move_player(c,imap);
             }
             break;
@@ -305,6 +308,7 @@ void move_box(char c, int imap) // 플레이어 이동방향 앞에 박스가 �
             if (nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] != '#' && nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] != '$' )
             {
                 nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] = '$';
+                nowPlayMap[current_player_pos[1]][current_player_pos[0]+1] = '.';
                 move_player(c,imap);
             }
             break;
@@ -413,6 +417,7 @@ _Bool is_undoing = false; //플레이어의 움직임이 undo인지 일반 커�
 
 void handle_history(_Bool is_undoing) //플레이어의 움직임을 기록하는 함수
 {
+    //u 키를 입력 받았을 경우
     if (is_undoing)
     {
         for (int iy = 0; iy < checkYsize(current_map_no, checkXsize(current_map_no)); iy++)
@@ -421,13 +426,13 @@ void handle_history(_Bool is_undoing) //플레이어의 움직임을 기록하�
             {
                 nowPlayMap[iy][ix] = history[4][iy][ix];
 
-                if (nowPlayMap[iy][ix] == '@')
+                if (history[4][iy][ix] == '@')
                 {
                     current_player_pos[0] = ix;
                     current_player_pos[1] = iy;
                 }
             }
-            printf("\n");
+            //printf("\n");
         }
         printmap(current_map_no);
 
@@ -449,11 +454,12 @@ void handle_history(_Bool is_undoing) //플레이어의 움직임을 기록하�
                 history[0][iy][ix] = '\0';
             }
         }
+        undo_counting--;
     }
-    else
+    else if( (!is_undoing) && undo_counting > 0)
     {
         //일반 커맨드를 입력받았을 경우
-        for (int ih = 0; ih <= 3; ++ih)
+        for (int ih = 0; ih < 4; ++ih)
         {
             for (int iy = 0; iy < checkYsize(current_map_no, checkXsize(current_map_no)); iy++)
             {
