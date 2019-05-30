@@ -10,6 +10,8 @@ int current_player_pos[2]; // 플레이어의 위치를 저장하는 변수
 int current_goals = 0; //목표지점의 개수
 int current_map_no;
 _Bool check_error = 0;
+char name[10] = {'\0'}; //사용자 이름을 받는 변수
+int move_count=0; // 순위표에서 사용할 변수
 
 _Bool check_mapfile(int n,int m) // 맵파일의 박스와 골인지점의 수를 검사하여, 수가 다르다면 오류를 출력함
 {
@@ -447,21 +449,28 @@ void ranking(int move_count, char imap)
 
 }
 
-void save(char name[], int move_count){
+void save(void){
     FILE *ofp;
 
     ofp = fopen("sokoban","w");
-    fprintf(ofp, "%s\n%d", name, move_count);
+    fprintf(ofp, "%s %d", name, move_count);
 
     fclose(ofp);
+}
+
+void load(void){
+    FILE *ifp;
+
+    ifp = fopen("sokoban","r");
+    fscanf(ifp, "%s %d", name, &move_count);
+    printf("%s %d", name, move_count);
+
+    fclose(ifp);
 }
 int main(void)
 {
     char command;
     int imap = 0;
-    char name[10] = {'\0'};
-    int move_count=0; // 순위표에서 사용할 변수
-
 
     load_map();
 
@@ -485,9 +494,14 @@ int main(void)
 
         switch(command)
         {
-            case 's':
-                save(name, move_count);
+            case 'f':
+                load();
                 break;
+
+            case 's':
+                save();
+                break;
+
             case 'n':
                 newgame(0);
                 move_count=0;
@@ -526,8 +540,6 @@ int main(void)
                 }
                 break;
         }
-
-
         printf("\n");
         // TESTING
         // i++;
