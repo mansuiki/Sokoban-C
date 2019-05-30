@@ -480,3 +480,86 @@ int main(void)
 
     return 0;
 }
+
+
+
+
+/*
+#define player 15
+
+int player_name=0; // player 배열에 저장
+
+
+
+Main 함수
+
+char player_ranking[player]; // player 이름 저장
+int move_count=0; // 순위표에서 사용할 변수
+
+printf("사용자 이름 : ");
+scanf("%s", &player_ranking[player_name]);
+getch();
+
+
+case 't':
+    command = getch();
+    if(command=='\n')
+        ranking(move_count,current_map_no,player_ranking[player_name]);
+    else if(command=='1')
+        ranking(move_count,0,player_ranking[player_name]);
+    else if(command=='2')
+        ranking(move_count,1,player_ranking[player_name]);
+    else if(command=='3')
+        ranking(move_count,2,player_ranking[player_name]);
+    else if(command=='4')
+        ranking(move_count,3,player_ranking[player_name]);
+    else if(command=='5')
+        ranking(move_count,4,player_ranking[player_name]);
+    break;
+case 'h':
+case 'j':
+case 'k':
+case 'l':
+    move_count++;
+    break;
+
+
+
+
+void ranking(int move_count, int imap, char player_ranking[]){
+
+    int i,j,change,k;
+
+    if(imap == current_map_no){
+        for(i=0;i<player;i++){
+            for(j=0;j<player;j++){
+                player_ranking[j] = move_count;
+                player_ranking[j+1] = move_count;
+                if(player_ranking[j]> player_ranking[j+1]) {
+                    change = player_ranking[player_name];
+                    player_ranking[j]=player_ranking[j+1];
+                    player_ranking[j+1]=change;
+                }
+            }
+        }
+
+        for(k=0;k<player;k++) {
+            printf("%d위 %s 움직인 횟수%d",k, player_ranking[player_name], move_count);
+        }
+    }
+    else if(imap == 1){
+        printf("%d\n",move_count);
+    }
+    else if(imap == 2){
+        printf("%d\n",move_count);
+    }
+    else if(imap == 3){
+        printf("%d\n",move_count);
+    }
+    else if(imap == 4){
+        printf("%d\n",move_count);
+    }
+
+
+}
+*/
