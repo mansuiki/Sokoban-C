@@ -447,7 +447,14 @@ void ranking(int move_count, char imap)
 
 }
 
+void save(char name[], int move_count){
+    FILE *ofp;
 
+    ofp = fopen("sokoban","w");
+    fprintf(ofp, "%s\n%d", name, move_count);
+
+    fclose(ofp);
+}
 int main(void)
 {
     char command;
@@ -478,6 +485,9 @@ int main(void)
 
         switch(command)
         {
+            case 's':
+                save(name, move_count);
+                break;
             case 'n':
                 newgame(0);
                 move_count=0;
