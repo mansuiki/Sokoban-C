@@ -20,7 +20,7 @@ _Bool check_mapfile(int n,int m) // 맵파일의 박스와 골인지점의 수�
 }
 
 void selectmap(int imap);
-void record_history(char move);
+void handle_history(_Bool);
 
 int getch(void) // 리눅스에서 getch() 사용을 위한 함수
 {
@@ -253,19 +253,19 @@ void move_player(char move, int imap) // 플레이어를 움직이는 함수
     {
         case 'h':// 좌
             current_player_pos[0]-=1;
-            record_history('l');
+            handle_history(false);
             break;
         case 'j':// 하
             current_player_pos[1]+=1;
-            record_history('k');
+            handle_history(false);
             break;
         case 'k':// 상
             current_player_pos[1]-=1;
-            record_history('j');
+            handle_history(false);
             break;
         case 'l' :// 우
             current_player_pos[0]+=1;
-            record_history('h');
+            handle_history(false);
             break;
     }
   
@@ -283,6 +283,7 @@ void move_box(char c, int imap) // 플레이어 이동방향 앞에 박스가 �
             if (nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] != '#' && nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] != '$' )
             {
                 nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] = '$';
+
                 move_player(c,imap);
             }
             break;
@@ -407,25 +408,69 @@ void newgame(void) // 첫 번쨰 맵부터 다시 시작
     printmap(imap);
 }
 
-char history[5] = {'\0'}; //움직임 명령을 반대로 기록해서 5개 저장하는 스택 변수
+char history[5][30][30] = {'\0'}; //현재 플레이하고 있는 맵을 기록해서 5개 저장하는 스택 변수
 _Bool is_undoing = false; //플레이어의 움직임이 undo인지 일반 커맨드인지 구별하는 변수
 
-void record_history(char move) //플레이어의 움직임을 기록하는 함수
+void handle_history(_Bool is_undoing) //플레이어의 움직임을 기록하는 함수
 {
     if (is_undoing)
     {
-        for (int i = 3; i >= 0; --i)
-            history[i+1] = history[i];
+        for (int iy = 0; iy < checkYsize(current_map_no, checkXsize(current_map_no)); iy++)
+        {
+            for (int ix = 0; ix < checkXsize(current_map_no); ix++)
+            {
+                nowPlayMap[iy][ix] = history[4][iy][ix];
 
-        history[0] = '\0';
+                if (nowPlayMap[iy][ix] == '@')
+                {
+                    current_player_pos[0] = ix;
+                    current_player_pos[1] = iy;
+                }
+            }
+            printf("\n");
+        }
+        printmap(current_map_no);
+
+        for (int ih = 3; ih >= 0; --ih)
+        {
+            for (int iy = 0; iy < checkYsize(current_map_no, checkXsize(current_map_no)); iy++)
+            {
+                for (int ix = 0; ix < checkXsize(current_map_no); ix++)
+                {
+                    history[ih+1][iy][ix] =  history[ih][iy][ix];
+                }
+            }
+        }
+
+        for (int iy = 0; iy < checkYsize(current_map_no, checkXsize(current_map_no)); iy++)
+        {
+            for (int ix = 0; ix < checkXsize(current_map_no); ix++)
+            {
+                history[0][iy][ix] = '\0';
+            }
+        }
     }
     else
     {
         //일반 커맨드를 입력받았을 경우
-        for (int i = 0; i <= 3; ++i)
-            history[i] = history[i+1];
+        for (int ih = 0; ih <= 3; ++ih)
+        {
+            for (int iy = 0; iy < checkYsize(current_map_no, checkXsize(current_map_no)); iy++)
+            {
+                for (int ix = 0; ix < checkXsize(current_map_no); ix++)
+                {
+                    history[ih][iy][ix] = history[ih+1][iy][ix];
+                }
+            }
+        }
 
-        history[4] = move;
+        for (int iy = 0; iy < checkYsize(current_map_no, checkXsize(current_map_no)); iy++)
+        {
+            for (int ix = 0; ix < checkXsize(current_map_no); ix++)
+            {
+                history[4][iy][ix] = nowPlayMap[iy][ix];
+            }
+        }
     }
 }
 
@@ -460,19 +505,13 @@ int main(void)
                 newgame();
                 break;
             case 'u':
-                is_undoing = true;
-                decide_move(history[4], current_map_no);
+                handle_history(true);
+                break;
         }
-
-        is_undoing = false;
 
         decide_move(command, imap);
         printmap(current_map_no);
 
-        printf("history: ");
-        for (int i = 0; i <= 4; ++i) {
-            printf("%c", history[i]);
-        }
         printf("\n");
         // TESTING
         // i++;
