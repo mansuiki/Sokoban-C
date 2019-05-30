@@ -399,10 +399,8 @@ void selectmap(int imap) // 플레이할 맵을 선택
     get_player_pos(current_map_no);
 }
 
-void newgame(void) // 첫 번쨰 맵부터 다시 시작
+void newgame(int imap) // 첫 번쨰 맵부터 다시 시작
 {
-    int imap=0;
-
     selectmap(imap);
     printmap(imap);
 }
@@ -481,7 +479,12 @@ int main(void)
         switch(command)
         {
             case 'n':
-                newgame();
+                newgame(0);
+                move_count=0;
+                break;
+
+            case 'r':
+                newgame(current_map_no);
                 break;
 
             case 'u':
