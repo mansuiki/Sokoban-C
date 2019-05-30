@@ -408,8 +408,15 @@ void printmap(int imap) // 현재 플레이하고 있는 맵을 출력
     }
 }
 
+char cmd_history[5] = {'\0'}; //움직임 명령을 반대로 기록해서 5개 저장하는 스택 변수
+_Bool box_history[5];
+
 void selectmap(int imap) // 플레이할 맵을 선택
 {
+    for (int i = 0; i <= 4; ++i)
+        cmd_history[i] = box_history[i] = '\0';
+
+
     for (int iy = 0; iy < checkYsize(imap, checkXsize(imap)); iy++)
     {
         for (int ix = 0; ix < checkXsize(imap); ix++)
@@ -431,9 +438,6 @@ void newgame(int imap) // 첫 번쨰 맵부터 다시 시작
     printmap(imap);
 }
 
-char cmd_history[5] = {'\0'}; //움직임 명령을 반대로 기록해서 5개 저장하는 스택 변수
-_Bool box_history[5];
-
 void record_history(char move) //플레이어의 움직임을 기록하는 함수
 {
     //일반 커맨드를 입력받았을 경우
@@ -450,16 +454,10 @@ void record_history(char move) //플레이어의 움직임을 기록하는 함�
 void undo()
 {
     is_undoing = true;
-
-    printf("mvbox: %d\n", box_history[4]);
-
     decide_move(cmd_history[4], current_map_no);
-
-
 
     if (box_history[4])
     {
-        printf("mvbox: %c\n", cmd_history[4]);
         switch (cmd_history[4])
         {
             case 'h':// 좌
@@ -504,7 +502,6 @@ void undo()
     cmd_history[0] = '\0';
     box_history[0] = '\0';
 }
-
 
 void ranking(int move_count, char imap)
 {
@@ -569,8 +566,6 @@ int main(void)
         // 맵파일 1번으로 가정, 추후 맵 선택 기능 추가 예정
         command = getch();
 
-
-
         switch(command)
         {
             case 'f':
@@ -628,14 +623,10 @@ int main(void)
         for (int  i = 0;  i <= 4; ++ i) {
             printf("%d", box_history[i]);
         }
-        printf("\nPOSITION: (%d,%d)", current_player_pos[0], current_player_pos[1]);
     }
     end:
     return 0;
 }
-
-
-
 
 /*
 
