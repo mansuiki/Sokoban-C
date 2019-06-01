@@ -437,7 +437,6 @@ void newgame(int imap) // 첫 번쨰 맵부터 다시 시작
     selectmap(imap);
     printmap(imap);
 }
-
 void record_history(char move) //플레이어의 움직임을 기록하는 함수
 {
     //일반 커맨드를 입력받았을 경우
@@ -461,32 +460,20 @@ void undo()
         switch (cmd_history[4])
         {
             case 'h':// 좌
-                if (nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] != '#' && nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] != '$' )
-                {
-                    nowPlayMap[current_player_pos[1]][current_player_pos[0]+1] = '$';
-                    nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] = '.';
-                }
+                nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] = '.';
+                nowPlayMap[current_player_pos[1]][current_player_pos[0]+1] = '$';
                 break;
             case 'j':// 하
-                if ((nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] != '#' && nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] != '$' ))
-                {
-                    nowPlayMap[current_player_pos[1]-1][current_player_pos[0]] = '$';
-                    nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] = '.';
-                }
+                nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] = '.';
+                nowPlayMap[current_player_pos[1]-1][current_player_pos[0]] = '$';
                 break;
             case 'k':// 상
-                if ((nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] != '#' && nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] != '$' ))
-                {
-                    nowPlayMap[current_player_pos[1]+1][current_player_pos[0]] = '$';
-                    nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] = '.';
-                }
+                nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] = '.';
+                nowPlayMap[current_player_pos[1]+1][current_player_pos[0]] = '$';
                 break;
             case 'l' :// 우
-                if ((nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] != '#' && nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] != '$' ))
-                {
-                    nowPlayMap[current_player_pos[1]][current_player_pos[0]-1] = '$';
-                    nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] = '.';
-                }
+                nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] = '.';
+                nowPlayMap[current_player_pos[1]][current_player_pos[0]-1] = '$';
                 break;
         }
     }
