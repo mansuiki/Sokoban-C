@@ -460,19 +460,31 @@ void undo()
         switch (cmd_history[4])
         {
             case 'h':// 좌
-                nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] = '.';
+                if(map[current_map_no][current_player_pos[1]][current_player_pos[0]+2] == 'O')
+                    nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] = 'O';
+                else
+                    nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] = '.';
                 nowPlayMap[current_player_pos[1]][current_player_pos[0]+1] = '$';
                 break;
             case 'j':// 하
-                nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] = '.';
+                if(map[current_map_no][current_player_pos[1]-2][current_player_pos[0]] == 'O')
+                    nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] = 'O';
+                else
+                    nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] = '.';
                 nowPlayMap[current_player_pos[1]-1][current_player_pos[0]] = '$';
                 break;
             case 'k':// 상
-                nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] = '.';
+                if(map[current_map_no][current_player_pos[1]+2][current_player_pos[0]] == 'O')
+                    nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] = 'O';
+                else
+                    nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] = '.';
                 nowPlayMap[current_player_pos[1]+1][current_player_pos[0]] = '$';
                 break;
             case 'l' :// 우
-                nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] = '.';
+                if(map[current_map_no][current_player_pos[1]][current_player_pos[0]-2] == 'O')
+                    nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] = 'O';
+                else
+                    nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] = '.';
                 nowPlayMap[current_player_pos[1]][current_player_pos[0]-1] = '$';
                 break;
         }
