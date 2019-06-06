@@ -21,6 +21,7 @@ _Bool box_history[5];
 
 void selectmap(int imap);
 void record_history(char move);
+void ranking(char imap);
 
 _Bool check_mapfile(int n,int m) // 맵파일의 박스와 골인지점의 수를 검사하여, 수가 다르다면 오류를 출력함
 {
@@ -240,7 +241,10 @@ void check_goals(int imap) // Checking
     }
 
     if (goals_achieved == current_goals)
+    {
+        ranking('S');
         selectmap(++current_map_no);
+    }
 }
 
 void move_player(char move, int imap) // 플레이어를 움직이는 함수
@@ -501,25 +505,255 @@ void undo()
     box_history[0] = '\0';
 }
 
-void ranking(int move_count, char imap)
+void ranking(char imap)
 {
-    int i,j,change,k;
+    FILE *ifp;
+    ifp = fopen("ranking", "r");
 
-    if (imap == '\n')
-        printf("%d\n", move_count);
-    else if (imap == '1')
-        printf("%d\n", move_count);
-    else if (imap == '2')
-        printf("%d\n", move_count);
-    else if (imap == '3')
-        printf("%d\n", move_count);
-    else if (imap == '4')
-        printf("%d\n", move_count);
-    else if (imap == '5')
-        printf("%d\n", move_count);
+    char c = 0;
+    char Read[5][6][100] = {'\0',};
+    int ReadRank[5][5] = {'\0',};
+    char ReadName[5][5][20] = {'\0',};
+    int rankint = 0, rankstart = 0, rankend = 0;
+    int first = 0, i1 = 0, i2 = 0, i3 = 0;
+    // first : 처음 확인 변수, i1 : 맵 지정 변수, i2 : 그 맵의 순위 지정 변수, i3 : 그 순위의 플레이어 와 움직인 횟수 변수
+
+    while ((c = getc(ifp)) != EOF)
+    {
+        switch (c)
+        {
+            case '\n':
+                if (i2 == 5)
+                {
+                    i2 = 0;
+                    i3 = 0;
+                }
+                else
+                {
+                    i2++;
+                    i3 = 0;
+                }
+
+                break;
+
+            case '%':
+                if (first == 0)
+                    first = 1;
+                else
+                {
+                    i1++;
+                    i2 = 0;
+                    i3 = 0;
+                }
+                break;
+
+            case ':':
+                rankstart = i3;
+                Read[i1][i2][i3] = c;
+                i3++;
+                break;
+
+            case '^':
+                rankend = i3;
+                // 0: 48
+                // 1: 49
+                // 2: 50
+                // 3: 51
+                // 4: 52
+                // 5: 53
+                // 6: 54
+                // 7: 55
+                // 8: 56
+                // 9: 57
+
+                int ten = rankend - rankstart - 2;
+                int tempten = 1;
+                for (int i = 1; i <= ten; i++)
+                    tempten *= 10;
+                ten = tempten;
+
+                for (int i = rankstart + 1; i <= rankend - 1; i++) {
+                    int temp = Read[i1][i2][i] - 48; // Char to int
+                    rankint += temp * ten;
+                    ten /= 10;
+                }
+
+                ReadRank[i1][i2 - 1] = rankint;
+                rankint = 0;
+                break;
+
+            default:
+                Read[i1][i2][i3] = c;
+                i3++;
+                break;
+        }
+    }
+    fclose(ifp);
+
+    for (i1 = 0; i1 <= 4; i1++)
+    {
+        for (i2 = 1; i2 <= 5; i2++)
+        {
+            for (i3 = 0; i3 <= 100; i3++)
+            {
+                char temp = Read[i1][i2][i3];
+                if (temp == ' ')
+                {
+                    ReadName[i1][i2-1][i3] = ' ';
+                    break;
+                }
+                else if (temp == ':')
+                    break;
+                else
+                    ReadName[i1][i2-1][i3] = Read[i1][i2][i3];
+            }
+        }
+    }
+
+
+
+
+    if (imap == '\n') // t 만 입력
+    {
+        system("clear");
+        for (i1 = 0; i1 <= 4; i1++)
+        {
+            printf("map%d\n", i1+1);
+            for (i2 = 0; i2 <= 4; i2++)
+            {
+                if (ReadName[i1][i2][0] != ' ')
+                    printf("%s : %d\n", ReadName[i1][i2], ReadRank[i1][i2]);
+            }
+            printf("\n");
+        }
+    }
+    else if (imap == '1') // t1 입력
+    {
+        system("clear");
+        i1 = 0;
+        printf("map%d\n", i1+1);
+        for (i2 = 0; i2 <= 4; i2++)
+        {
+            if (ReadName[i1][i2][0] != ' ')
+                printf("%s : %d\n", ReadName[i1][i2], ReadRank[i1][i2]);
+        }
+        printf("\n");
+    }
+    else if (imap == '2') // t2 input
+    {
+        system("clear");
+        i1 = 1;
+        printf("map%d\n", i1+1);
+        for (i2 = 0; i2 <= 4; i2++)
+        {
+            if (ReadName[i1][i2][0] != ' ')
+                printf("%s : %d\n", ReadName[i1][i2], ReadRank[i1][i2]);
+        }
+        printf("\n");
+    }
+    else if (imap == '3') // t3 input
+    {
+        system("clear");
+        i1 = 2;
+        printf("map%d\n", i1+1);
+        for (i2 = 0; i2 <= 4; i2++)
+        {
+            if (ReadName[i1][i2][0] != ' ')
+                printf("%s : %d\n", ReadName[i1][i2], ReadRank[i1][i2]);
+        }
+        printf("\n");
+    }
+    else if (imap == '4') // t4 input
+    {
+        system("clear");
+        i1 = 3;
+        printf("map%d\n", i1+1);
+        for (i2 = 0; i2 <= 4; i2++)
+        {
+            if (ReadName[i1][i2][0] != ' ')
+                printf("%s : %d\n", ReadName[i1][i2], ReadRank[i1][i2]);
+        }
+        printf("\n");
+    }
+    else if (imap == '5') // t5 input
+    {
+        system("clear");
+        i1 = 4;
+        printf("map%d\n", i1+1);
+        for (i2 = 0; i2 <= 4; i2++)
+        {
+            if (ReadName[i1][i2][0] != ' ')
+                printf("%s : %d\n", ReadName[i1][i2], ReadRank[i1][i2]);
+        }
+        printf("\n");
+    }
+    else if (imap == 'S') // Save
+    {
+        //name , //move_count
+        //current_map_no
+
+
+        for (i2 = 0; i2 <= 4; i2++)
+        {
+            if (ReadRank[current_map_no][i2] > move_count)
+            {
+                if (i2 == 4)
+                {
+                    ReadRank[current_map_no][i2] = move_count;
+                    for (int i = 0; i <= 19; i++)
+                    {
+                        if (i >= 10)
+                            ReadName[current_map_no][i2][i] = '\0';
+                        else
+                            ReadName[current_map_no][i2][i] = name[i];
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i <= 19; i++) // 마지막 순위의 내용을 초기화
+                        ReadName[current_map_no][4][i] = '\0';
+                    ReadRank[current_map_no][4] = 0;
+
+                    for (int i = 3; i >= i2; i--) // 순위를 한개씩 내림 -> 새로 갱신될 순위까지
+                    {
+                        for (int a = 0; a <= 19; a++)
+                            ReadName[current_map_no][i + 1][a] = ReadName[current_map_no][i][a];
+                        ReadRank[current_map_no][i+1] = ReadRank[current_map_no][i];
+                    }
+
+                    ReadRank[current_map_no][i2] = move_count; // 새로운 순위 넣음
+                    for (int i = 0; i <= 19; i++)
+                    {
+                        if (i >= 10)
+                            ReadName[current_map_no][i2][i] = '\0';
+                        else
+                            ReadName[current_map_no][i2][i] = name[i];
+                    }
+                }
+                break;
+            }
+        }
+
+
+        FILE *ofp;
+        ofp = fopen("ranking.out", "w+");
+
+        for (i1 = 0; i1 <= 4; i1++)
+        {
+            fprintf(ofp, "%%map%d\n", i1+1);
+            for (i2 = 0; i2 <= 4; i2++)
+            {
+                fprintf(ofp, "%s:%d^\n", ReadName[i1][i2], ReadRank[i1][i2]);
+            }
+        }
+        fclose(ofp);
+
+        move_count = 0;
+    }
 }
 
-void save(void){
+void save(void)
+{
     FILE *ofp;
 
     ofp = fopen("sokoban","w");
@@ -528,7 +762,8 @@ void save(void){
     fclose(ofp);
 }
 
-void load(void){
+void load(void)
+{
     FILE *ifp;
 
     ifp = fopen("sokoban","r");
@@ -604,7 +839,8 @@ int main(void)
                 break;
 
             case 's':
-                save();
+                ranking('S');
+                //save();
                 break;
 
             case 'f':
@@ -617,7 +853,7 @@ int main(void)
 
             case 't':
                 command = getch();
-                ranking(move_count,command);
+                ranking(command);
                 break;
 
             case 'e':
@@ -637,6 +873,7 @@ int main(void)
         for (int  i = 0;  i <= 4; ++ i) {
             printf("%d", box_history[i]);
         }
+        printf("\nMove_count:%d", move_count);
     }
     end:
     return 0;
