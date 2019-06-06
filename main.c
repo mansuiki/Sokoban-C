@@ -243,7 +243,8 @@ void check_goals(int imap) // Checking
     if (goals_achieved == current_goals)
     {
         ranking('S');
-        selectmap(++current_map_no);
+        current_map_no++;
+        selectmap(current_map_no);
     }
 }
 
@@ -736,7 +737,7 @@ void ranking(char imap)
 
 
         FILE *ofp;
-        ofp = fopen("ranking.out", "w+");
+        ofp = fopen("ranking", "w+");
 
         for (i1 = 0; i1 <= 4; i1++)
         {
@@ -790,7 +791,6 @@ void display(void)
 int main(void)
 {
     char command;
-    int imap = 0;
 
     load_map();
 
@@ -820,13 +820,14 @@ int main(void)
                 get_player_pos();
                 is_undoing = false;
                 move_count++;
-                decide_move(command, imap);
+                decide_move(command, current_map_no);
                 printmap(current_map_no);
                 break;
 
             case 'u':
                 get_player_pos();
                 undo();
+                move_count++;
                 break;
 
             case 'r':
@@ -839,8 +840,7 @@ int main(void)
                 break;
 
             case 's':
-                ranking('S');
-                //save();
+                save();
                 break;
 
             case 'f':
