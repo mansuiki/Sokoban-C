@@ -5,13 +5,22 @@
 #define false 0
 
 char map[5][30][30]; // load_map 에 temp 변수를 가공하여 저장하는 변수
-char nowPlayMap[30][30] = {NULL, }; // 현재 플레이하고 있는 맵을 저장하는 변수
+char nowPlayMap[30][30] =  {'\0', }; // 현재 플레이하고 있는 맵을 저장하는 변수
 int current_player_pos[2]; // 플레이어의 위치를 저장하는 변수
 int current_goals = 0; //목표지점의 개수
 int current_map_no;
 _Bool check_error = 0, is_undoing;
 char name[10] = {'\0'}; //사용자 이름을 받는 변수
 int move_count=0; // 순위표에서 사용할 변수
+
+_Bool is_box_moved = 0;
+
+char cmd_history[5] = {'\0'}; //움직임 명령을 반대로 기록해서 5개 저장하는 스택 변수
+_Bool box_history[5];
+
+
+void selectmap(int imap);
+void record_history(char move);
 
 _Bool check_mapfile(int n,int m) // 맵파일의 박스와 골인지점의 수를 검사하여, 수가 다르다면 오류를 출력함
 {
@@ -20,9 +29,6 @@ _Bool check_mapfile(int n,int m) // 맵파일의 박스와 골인지점의 수�
     else
         return 0;
 }
-
-void selectmap(int imap);
-void record_history(char move);
 
 int getch(void) // 리눅스에서 getch() 사용을 위한 함수
 {
@@ -60,7 +66,7 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
      * check_goals: 맵파일에 골의 위치를 확인하는 변수
      * check_error: 맵의 박스와 골의 위치를 확인하며 에러를 판별하는 변수
     */
-    char temp[5][30][30] = {NULL, };
+    char temp[5][30][30] =  {'\0', };
     int imap = 0, iy = 0, ix = 0, c = 0;
     int check_box=0,check_goals=0;
     _Bool will_load = false;
@@ -152,7 +158,7 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
 
     fclose(ifp);
     if(check_error == 1) {
-        printf("Error");
+        printf("Error : Map");
         return;
     }
 
@@ -162,7 +168,7 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
         {
             for (int i3 = 0; i3 <= 29; i3++)
             {
-                if (temp[i1][i2][i3] == NULL)
+                if (temp[i1][i2][i3] == '\0')
                     map[i1][i2][i3] = 'C';
                 else
                     map[i1][i2][i3] = temp[i1][i2][i3];
@@ -170,7 +176,6 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
         }
     }
 }
-
 
 int checkXsize(int imap) // 배열의 X 사이즈를 알아내는 함수
 {
@@ -187,8 +192,6 @@ int checkXsize(int imap) // 배열의 X 사이즈를 알아내는 함수
 
     return size;
 }
-
-
 
 int checkYsize(int imap, int Xsize) // 배열의 Y 사이즈를 알아내는 함수
 {
@@ -224,7 +227,7 @@ void get_player_pos(void) // 플레이어의 위치를 찾는 함수
     }
 }
 
-void check_goals(int imap)
+void check_goals(int imap) // Checking
 {
     int goals_achieved = 0;
     for (int iy = 0; iy < checkYsize(imap, checkXsize(imap)); iy++)
@@ -276,8 +279,6 @@ void move_player(char move, int imap) // 플레이어를 움직이는 함수
 
     check_goals(imap); //플레이어가 움직일 때마다 골 여부 확인
 }
-
-_Bool is_box_moved = 0;
 
 void move_box(char c, int imap) // 플레이어 이동방향 앞에 박스가 존재할경우를 검사. 박스의 앞에 벽이나 또다른 박스가 있다면 움직이지 않습니다.
 {
@@ -408,9 +409,6 @@ void printmap(int imap) // 현재 플레이하고 있는 맵을 출력
     }
 }
 
-char cmd_history[5] = {'\0'}; //움직임 명령을 반대로 기록해서 5개 저장하는 스택 변수
-_Bool box_history[5];
-
 void selectmap(int imap) // 플레이할 맵을 선택
 {
     for (int i = 0; i <= 4; ++i)
@@ -432,11 +430,12 @@ void selectmap(int imap) // 플레이할 맵을 선택
     get_player_pos();
 }
 
-void newgame(int imap) // 첫 번쨰 맵부터 다시 시작
+void newgame(int imap) // 맵번호를 받아 다시 시작
 {
     selectmap(imap);
     printmap(imap);
 }
+
 void record_history(char move) //플레이어의 움직임을 기록하는 함수
 {
     //일반 커맨드를 입력받았을 경우
@@ -504,7 +503,6 @@ void undo()
 
 void ranking(int move_count, char imap)
 {
-
     int i,j,change,k;
 
     if (imap == '\n')
@@ -519,7 +517,6 @@ void ranking(int move_count, char imap)
         printf("%d\n", move_count);
     else if (imap == '5')
         printf("%d\n", move_count);
-
 }
 
 void save(void){
@@ -539,6 +536,20 @@ void load(void){
     printf("%s %d", name, move_count);
 
     fclose(ifp);
+}
+
+void display(void)
+{
+    system("clear");
+    printf("h(왼쪽), j(아래), k(위), l(오른쪽)\n"
+           "u(undo)\n"
+           "r(replay)\n"
+           "n(new)\n"
+           "e(exit)\n"
+           "s(save)\n"
+           "f(file load)\n"
+           "d(display help)\n"
+           "t(top)");
 }
 
 int main(void)
@@ -567,37 +578,6 @@ int main(void)
 
         switch(command)
         {
-            case 'f':
-                load();
-                break;
-
-            case 's':
-                save();
-                break;
-
-            case 'n':
-                newgame(0);
-                move_count=0;
-                break;
-
-            case 'r':
-                newgame(current_map_no);
-                break;
-
-            case 'u':
-                get_player_pos();
-                undo();
-                break;
-
-            case 'o':
-                goto end;
-                break;
-
-            case 't':
-                command = getch();
-                ranking(move_count,command);
-                break;
-
             case 'h':
             case 'j':
             case 'k':
@@ -607,6 +587,41 @@ int main(void)
                 move_count++;
                 decide_move(command, imap);
                 printmap(current_map_no);
+                break;
+
+            case 'u':
+                get_player_pos();
+                undo();
+                break;
+
+            case 'r':
+                newgame(current_map_no);
+                break;
+
+            case 'n':
+                newgame(0);
+                move_count=0;
+                break;
+
+            case 's':
+                save();
+                break;
+
+            case 'f':
+                load();
+                break;
+
+            case 'd':
+                display();
+                break;
+
+            case 't':
+                command = getch();
+                ranking(move_count,command);
+                break;
+
+            case 'e':
+                goto end;
                 break;
         }
 
@@ -626,78 +641,3 @@ int main(void)
     end:
     return 0;
 }
-
-/*
-
-
-Main 함수
-
-int move_count=0; // 순위표에서 사용할 변수
-
-printf("사용자 이름 : ");
-scanf("%s", &player_ranking[player_name]);
-getch();
-
-
-case 't':
-    command = getch();
-    if(command=='\n')
-        ranking(move_count,current_map_no,player_ranking[player_name]);
-    else if(command=='1')
-        ranking(move_count,0,player_ranking[player_name]);
-    else if(command=='2')
-        ranking(move_count,1,player_ranking[player_name]);
-    else if(command=='3')
-        ranking(move_count,2,player_ranking[player_name]);
-    else if(command=='4')
-        ranking(move_count,3,player_ranking[player_name]);
-    else if(command=='5')
-        ranking(move_count,4,player_ranking[player_name]);
-    break;
-case 'h':
-case 'j':
-case 'k':
-case 'l':
-    move_count++;
-    break;
-
-
-
-
-void ranking(int move_count, int imap, char player_ranking[]){
-
-    int i,j,change,k;
-
-    if(imap == current_map_no){
-        for(i=0;i<player;i++){
-            for(j=0;j<player;j++){
-                player_ranking[j] = move_count;
-                player_ranking[j+1] = move_count;
-                if(player_ranking[j]> player_ranking[j+1]) {
-                    change = player_ranking[player_name];
-                    player_ranking[j]=player_ranking[j+1];
-                    player_ranking[j+1]=change;
-                }
-            }
-        }
-
-        for(k=0;k<player;k++) {
-            printf("%d위 %s 움직인 횟수%d",k, player_ranking[player_name], move_count);
-        }
-    }
-    else if(imap == 1){
-        printf("%d\n",move_count);
-    }
-    else if(imap == 2){
-        printf("%d\n",move_count);
-    }
-    else if(imap == 3){
-        printf("%d\n",move_count);
-    }
-    else if(imap == 4){
-        printf("%d\n",move_count);
-    }
-
-
-}
-*/
