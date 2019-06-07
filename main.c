@@ -231,7 +231,6 @@ void get_player_pos(void) // 플레이어의 위치를 찾는 함수
                     current_player_pos[1] = iy;
             }
         }
-        printf("\n");
     }
 }
 
@@ -263,7 +262,7 @@ void move_player(char move, int imap) // 플레이어를 움직이는 함수
     }
     else
     {
-        nowPlayMap[current_player_pos[1]][current_player_pos[0]] = '.'; // 아니면 .으로 변경
+        nowPlayMap[current_player_pos[1]][current_player_pos[0]] = ' '; // 아니면 공백으로 변경
     }
 
     switch (move)
@@ -411,6 +410,7 @@ void decide_move(char c, int imap) //앞에 있는 물체를 확인하고 움직
 void printmap(int imap) // 현재 플레이하고 있는 맵을 출력
 {
     system("clear");
+    printf("%s\n", name);
     for (int iy = 0; iy < checkYsize(imap, checkXsize(imap)); iy++)
     {
         for (int ix = 0; ix < checkXsize(imap); ix++)
@@ -432,7 +432,8 @@ void selectmap(int imap) // 플레이할 맵을 선택
         for (int ix = 0; ix < checkXsize(imap); ix++)
         {
             nowPlayMap[iy][ix] = map[imap][iy][ix];
-
+            if(map[imap][iy][ix]=='.')
+                nowPlayMap[iy][ix]=' '; // 공백으로 채워주기
             //목표 지점 카운팅
             if (nowPlayMap[iy][ix] == 'O')
                 current_goals ++;
@@ -474,28 +475,28 @@ void undo()
                 if(map[current_map_no][current_player_pos[1]][current_player_pos[0]+2] == 'O')
                     nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] = 'O';
                 else
-                    nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] = '.';
+                    nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] = ' ';
                 nowPlayMap[current_player_pos[1]][current_player_pos[0]+1] = '$';
                 break;
             case 'j':// 하
                 if(map[current_map_no][current_player_pos[1]-2][current_player_pos[0]] == 'O')
                     nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] = 'O';
                 else
-                    nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] = '.';
+                    nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] = ' ';
                 nowPlayMap[current_player_pos[1]-1][current_player_pos[0]] = '$';
                 break;
             case 'k':// 상
                 if(map[current_map_no][current_player_pos[1]+2][current_player_pos[0]] == 'O')
                     nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] = 'O';
                 else
-                    nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] = '.';
+                    nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] = ' ';
                 nowPlayMap[current_player_pos[1]+1][current_player_pos[0]] = '$';
                 break;
             case 'l' :// 우
                 if(map[current_map_no][current_player_pos[1]][current_player_pos[0]-2] == 'O')
                     nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] = 'O';
                 else
-                    nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] = '.';
+                    nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] = ' ';
                 nowPlayMap[current_player_pos[1]][current_player_pos[0]-1] = '$';
                 break;
         }
@@ -845,18 +846,15 @@ int main(void)
 
     printf("이름을 입력해주세요 : ");
     scanf("%10s", name);
-    printf("%s", name);
 
     current_map_no = 0;
-
     selectmap(current_map_no);
     printmap(current_map_no);
-
     while(1)
     {
+
         // 맵파일 1번으로 가정, 추후 맵 선택 기능 추가 예정
         command = getch();
-
         switch(command)
         {
             case 'h':
