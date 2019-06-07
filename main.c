@@ -73,6 +73,13 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
     _Bool will_load = false;
     ifp = fopen("map", "r");
 
+    if (ifp == NULL)
+    {
+        check_error = 1;
+        printf("Error : Map\n");
+        return;
+    }// 파일이 없으면
+
     while ((c = getc(ifp)) != EOF)
     {
         switch (c)
@@ -518,6 +525,45 @@ void ranking(char imap)
     int rankint = 0, rankstart = 0, rankend = 0;
     int first = 0, i1 = 0, i2 = 0, i3 = 0;
     // first : 처음 확인 변수, i1 : 맵 지정 변수, i2 : 그 맵의 순위 지정 변수, i3 : 그 순위의 플레이어 와 움직인 횟수 변수
+
+    if (ifp == NULL) // 파일이 없으면,,
+    {
+        fclose(ifp);
+        ifp = fopen("ranking", "w+");
+        fprintf(ifp, "%%map1\n"
+                     " :0^\n"
+                     " :0^\n"
+                     " :0^\n"
+                     " :0^\n"
+                     " :0^\n"
+                     "%%map2\n"
+                     " :0^\n"
+                     " :0^\n"
+                     " :0^\n"
+                     " :0^\n"
+                     " :0^\n"
+                     "%%map3\n"
+                     " :0^\n"
+                     " :0^\n"
+                     " :0^\n"
+                     " :0^\n"
+                     " :0^\n"
+                     "%%map4\n"
+                     " :0^\n"
+                     " :0^\n"
+                     " :0^\n"
+                     " :0^\n"
+                     " :0^\n"
+                     "%%map5\n"
+                     " :0^\n"
+                     " :0^\n"
+                     " :0^\n"
+                     " :0^\n"
+                     " :0^");
+        fclose(ifp);
+        ifp = fopen("ranking", "r");
+    }
+
 
     while ((c = getc(ifp)) != EOF)
     {
