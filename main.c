@@ -11,7 +11,7 @@ int current_goals = 0; //목표지점의 개수
 int current_map_no;
 _Bool check_error = 0, is_undoing;
 char name[10] = {'\0'}; //사용자 이름을 받는 변수
-int move_count=0; // 순위표에서 사용할 변수
+unsigned move_count=0; // 순위표에서 사용할 변수
 
 _Bool is_box_moved = 0;
 
@@ -908,15 +908,6 @@ int main(void)
         printf("\n");
         // TESTING
         // i++;
-        printf("commands: ");
-        for (int  i = 0;  i <= 4; ++ i) {
-            printf("%c", cmd_history[i]);
-        }
-        printf("\n");
-        printf("box: ");
-        for (int  i = 0;  i <= 4; ++ i) {
-            printf("%d", box_history[i]);
-        }
         printf("\nMove_count:%d", move_count);
     }
     end:
