@@ -71,7 +71,7 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
     int imap = 0, iy = 0, ix = 0, c = 0;
     int check_box=0,check_goals=0;
     _Bool will_load = false;
-    ifp = fopen("map", "r");
+    ifp = fopen("map.txt", "r");
 
     if (ifp == NULL)
     {
@@ -410,6 +410,7 @@ void decide_move(char c, int imap) //앞에 있는 물체를 확인하고 움직
 void printmap(int imap) // 현재 플레이하고 있는 맵을 출력
 {
     system("clear");
+    printf("Hello %s\n\n",name);
     for (int iy = 0; iy < checkYsize(imap, checkXsize(imap)); iy++)
     {
         for (int ix = 0; ix < checkXsize(imap); ix++)
@@ -516,7 +517,7 @@ void undo()
 void ranking(char imap)
 {
     FILE *ifp;
-    ifp = fopen("ranking", "r");
+    ifp = fopen("ranking.txt", "r");
 
     char c = 0;
     char Read[5][6][100] = {'\0',};
@@ -529,7 +530,7 @@ void ranking(char imap)
     if (ifp == NULL) // 파일이 없으면,,
     {
         fclose(ifp);
-        ifp = fopen("ranking", "w+");
+        ifp = fopen("ranking.txt", "w+");
         fprintf(ifp, "%%map1\n"
                      " :0^\n"
                      " :0^\n"
@@ -561,7 +562,7 @@ void ranking(char imap)
                      " :0^\n"
                      " :0^");
         fclose(ifp);
-        ifp = fopen("ranking", "r");
+        ifp = fopen("ranking.txt", "r");
     }
 
 
@@ -783,7 +784,7 @@ void ranking(char imap)
 
 
         FILE *ofp;
-        ofp = fopen("ranking", "w+");
+        ofp = fopen("ranking.txt", "w+");
 
         for (i1 = 0; i1 <= 4; i1++)
         {
@@ -803,7 +804,7 @@ void save(void)
 {
     FILE *ofp;
 
-    ofp = fopen("sokoban","w");
+    ofp = fopen("sokoban.txt","w");
     fprintf(ofp, "%s\t%d\t%d\t%d\t%d\t%d\n", name, move_count, current_map_no, current_goals, current_player_pos[0], current_player_pos[1]);
 
     for (int i = 0; i <= checkYsize(current_map_no, checkXsize(current_map_no)); i++)
@@ -818,7 +819,7 @@ void load(void)
 {
     FILE *ifp;
 
-    ifp = fopen("sokoban","r");
+    ifp = fopen("sokoban.txt","r");
 
     if (ifp == NULL)
     {
@@ -892,8 +893,6 @@ int main(void)
     current_map_no = 0;
     selectmap(current_map_no);
     printmap(current_map_no);
-    printf("\n");
-    printf("Player : %s\n", name);
     printf("Move_count:%d\n", move_count);
 
     while(1)
@@ -974,7 +973,6 @@ int main(void)
 
         printf("\n");
 
-        printf("Player : %s\n", name);
         printf("Move_count:%d\n", move_count);
     }
     end:
