@@ -410,7 +410,6 @@ void decide_move(char c, int imap) //앞에 있는 물체를 확인하고 움직
 void printmap(int imap) // 현재 플레이하고 있는 맵을 출력
 {
     system("clear");
-    printf("%s\n", name);
     for (int iy = 0; iy < checkYsize(imap, checkXsize(imap)); iy++)
     {
         for (int ix = 0; ix < checkXsize(imap); ix++)
@@ -743,7 +742,7 @@ void ranking(char imap)
 
         for (i2 = 0; i2 <= 4; i2++)
         {
-            if (ReadRank[current_map_no][i2] > move_count)
+            if ((ReadRank[current_map_no][i2] > move_count) || (ReadRank[current_map_no][i2] == 0))
             {
                 if (i2 == 4)
                 {
@@ -805,9 +804,14 @@ void save(void)
     FILE *ofp;
 
     ofp = fopen("sokoban","w");
-    fprintf(ofp, "%s %d", name, move_count);
+    fprintf(ofp, "%s\t%d\t%d\t%d\t%d\t%d\n", name, move_count, current_map_no, current_goals, current_player_pos[0], current_player_pos[1]);
+
+    for (int i = 0; i <= checkYsize(current_map_no, checkXsize(current_map_no)); i++)
+        fprintf(ofp, "%s\n", nowPlayMap[i]);
 
     fclose(ofp);
+    printmap(current_map_no);
+    printf("Save Complete!");
 }
 
 void load(void)
@@ -815,10 +819,48 @@ void load(void)
     FILE *ifp;
 
     ifp = fopen("sokoban","r");
-    fscanf(ifp, "%s %d", name, &move_count);
-    printf("%s %d", name, move_count);
+
+    if (ifp == NULL)
+    {
+        printmap(current_map_no);
+        printf("Load Fail : No Save");
+        fclose(ifp);
+        return;
+    }
+    fscanf(ifp, "%s\t%d\t%d\t%d\t%d\t%d", name, &move_count, &current_map_no, &current_goals, &current_player_pos[0], &current_player_pos[1]);
+
+    //selectmap(current_map_no);
+
+    for (int i = 0; i <= 4; ++i)
+        cmd_history[i] = box_history[i] = '\0';
+
+    char c;
+    int i1 = 0, i2 = 0, first = 0;
+    while ((c = getc(ifp)) != EOF)
+    {
+        switch (c)
+        {
+            case '\n':
+                if (first == 0)
+                    first = 1;
+                else
+                {
+                    i1++;
+                    i2 = 0;
+                }
+                break;
+
+            default:
+                nowPlayMap[i1][i2] = c;
+                i2++;
+                break;
+
+        }
+    }
 
     fclose(ifp);
+    printmap(current_map_no);
+    printf("Load Complete!");
 }
 
 void display(void)
@@ -850,10 +892,14 @@ int main(void)
     current_map_no = 0;
     selectmap(current_map_no);
     printmap(current_map_no);
+    printf("\n");
+    printf("Player : %s\n", name);
+    printf("Move_count:%d\n", move_count);
+
     while(1)
     {
-
         // 맵파일 1번으로 가정, 추후 맵 선택 기능 추가 예정
+        int noinfor = 0;
         command = getch();
         switch(command)
         {
@@ -893,23 +939,46 @@ int main(void)
 
             case 'd':
                 display();
+                noinfor = 1;
                 break;
 
             case 't':
                 command = getch();
                 ranking(command);
+                noinfor = 1;
                 break;
 
             case 'e':
                 goto end;
                 break;
+
+            case '\n':
+                printmap(current_map_no);
+                break;
+
+            default:
+                noinfor = 1;
+                break;
+        }
+
+        if (noinfor == 1)
+            continue;
+
+        if (current_map_no == 5)
+        {
+            system("clear");
+            printf("You Win!!\n");
+            printf("See You %s\n", name);
+            return 0;
         }
 
         printf("\n");
-        // TESTING
-        // i++;
-        printf("\nMove_count:%d", move_count);
+
+        printf("Player : %s\n", name);
+        printf("Move_count:%d\n", move_count);
     }
     end:
+    system("clear");
+    printf("See You %s\n", name);
     return 0;
 }
