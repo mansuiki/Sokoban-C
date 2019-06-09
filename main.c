@@ -71,7 +71,7 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
     int imap = 0, iy = 0, ix = 0, c = 0;
     int check_box=0,check_goals=0;
     _Bool will_load = false;
-    ifp = fopen("map.txt", "r");
+    ifp = fopen("map", "r");
 
     if (ifp == NULL)
     {
@@ -426,6 +426,14 @@ void selectmap(int imap) // 플레이할 맵을 선택
     for (int i = 0; i <= 4; ++i)
         cmd_history[i] = box_history[i] = '\0';
 
+    for (int i1 = 0; i1 <= 29; i1++)
+    {
+        for (int i2 = 0; i2 <= 29; i2++)
+            nowPlayMap[i1][i2] = '\0';
+    }
+
+
+    current_goals = 0;
 
     for (int iy = 0; iy < checkYsize(imap, checkXsize(imap)); iy++)
     {
@@ -517,7 +525,7 @@ void undo()
 void ranking(char imap)
 {
     FILE *ifp;
-    ifp = fopen("ranking.txt", "r");
+    ifp = fopen("ranking", "r");
 
     char c = 0;
     char Read[5][6][100] = {'\0',};
@@ -530,7 +538,7 @@ void ranking(char imap)
     if (ifp == NULL) // 파일이 없으면,,
     {
         fclose(ifp);
-        ifp = fopen("ranking.txt", "w+");
+        ifp = fopen("ranking", "w+");
         fprintf(ifp, "%%map1\n"
                      " :0^\n"
                      " :0^\n"
@@ -562,7 +570,7 @@ void ranking(char imap)
                      " :0^\n"
                      " :0^");
         fclose(ifp);
-        ifp = fopen("ranking.txt", "r");
+        ifp = fopen("ranking", "r");
     }
 
 
@@ -677,6 +685,7 @@ void ranking(char imap)
     }
     else if (imap == '1') // t1 입력
     {
+        getch();
         system("clear");
         i1 = 0;
         printf("map%d\n", i1+1);
@@ -689,6 +698,7 @@ void ranking(char imap)
     }
     else if (imap == '2') // t2 input
     {
+        getch();
         system("clear");
         i1 = 1;
         printf("map%d\n", i1+1);
@@ -701,6 +711,7 @@ void ranking(char imap)
     }
     else if (imap == '3') // t3 input
     {
+        getch();
         system("clear");
         i1 = 2;
         printf("map%d\n", i1+1);
@@ -713,6 +724,7 @@ void ranking(char imap)
     }
     else if (imap == '4') // t4 input
     {
+        getch();
         system("clear");
         i1 = 3;
         printf("map%d\n", i1+1);
@@ -725,6 +737,7 @@ void ranking(char imap)
     }
     else if (imap == '5') // t5 input
     {
+        getch();
         system("clear");
         i1 = 4;
         printf("map%d\n", i1+1);
@@ -784,7 +797,7 @@ void ranking(char imap)
 
 
         FILE *ofp;
-        ofp = fopen("ranking.txt", "w+");
+        ofp = fopen("ranking", "w+");
 
         for (i1 = 0; i1 <= 4; i1++)
         {
@@ -804,7 +817,7 @@ void save(void)
 {
     FILE *ofp;
 
-    ofp = fopen("sokoban.txt","w");
+    ofp = fopen("sokoban","w+");
     fprintf(ofp, "%s\t%d\t%d\t%d\t%d\t%d\n", name, move_count, current_map_no, current_goals, current_player_pos[0], current_player_pos[1]);
 
     for (int i = 0; i <= checkYsize(current_map_no, checkXsize(current_map_no)); i++)
@@ -819,7 +832,7 @@ void load(void)
 {
     FILE *ifp;
 
-    ifp = fopen("sokoban.txt","r");
+    ifp = fopen("sokoban","r");
 
     if (ifp == NULL)
     {
@@ -828,12 +841,26 @@ void load(void)
         fclose(ifp);
         return;
     }
+
+    for (int i = 0; i <= 9; i++)
+        name[i] = '\0';
+
+    move_count = 0, current_map_no = 0, current_goals = 0, current_player_pos[0] = 0, current_player_pos[1] = 0;
+
+    for (int i = 0; i <= 4; ++i)
+        cmd_history[i] = box_history[i] = '\0';
+
+    for (int i1 = 0; i1 <= 29; i1++)
+    {
+        for (int i2 = 0; i2 <= 29; i2++)
+            nowPlayMap[i1][i2] = '\0';
+    }
+
+
     fscanf(ifp, "%s\t%d\t%d\t%d\t%d\t%d", name, &move_count, &current_map_no, &current_goals, &current_player_pos[0], &current_player_pos[1]);
 
     //selectmap(current_map_no);
 
-    for (int i = 0; i <= 4; ++i)
-        cmd_history[i] = box_history[i] = '\0';
 
     char c;
     int i1 = 0, i2 = 0, first = 0;
@@ -893,7 +920,7 @@ int main(void)
     current_map_no = 0;
     selectmap(current_map_no);
     printmap(current_map_no);
-    printf("Move_count:%d\n", move_count);
+    printf("\nMove_count:%d\n", move_count);
 
     while(1)
     {
@@ -971,9 +998,7 @@ int main(void)
             return 0;
         }
 
-        printf("\n");
-
-        printf("Move_count:%d\n", move_count);
+        printf("\nMove_count:%d\n", move_count);
     }
     end:
     system("clear");
