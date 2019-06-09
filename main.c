@@ -8,20 +8,21 @@ char map[5][30][30]; // load_map 에 temp 변수를 가공하여 저장하는 �
 char nowPlayMap[30][30] =  {'\0', }; // 현재 플레이하고 있는 맵을 저장하는 변수
 int current_player_pos[2]; // 플레이어의 위치를 저장하는 변수
 int current_goals = 0; //목표지점의 개수
-int current_map_no;
-_Bool check_error = 0, is_undoing;
+int current_map_no; // 현재 플레이하는 맵
+_Bool check_error = 0, is_undoing; // 에러를 체크하는 변수와, undo를 하고 있는지 상태를 저장하는 변수
 char name[10] = {'\0'}; //사용자 이름을 받는 변수
 unsigned move_count=0; // 순위표에서 사용할 변수
+int numberofmap = 0; // 전체 맵개수를 저장하는 변수
 
-_Bool is_box_moved = 0;
+_Bool is_box_moved = 0; // 박스가 움직였는지 저장하는 변수
 
 char cmd_history[5] = {'\0'}; //움직임 명령을 반대로 기록해서 5개 저장하는 스택 변수
-_Bool box_history[5];
+_Bool box_history[5]; // 박스 움직임을 저장하는 변수
 
 
-void selectmap(int imap);
-void record_history(char move);
-void ranking(char imap);
+void selectmap(int imap); // 함수 사용을 위해서 미리 선언함
+void record_history(char move); // 위와 같음
+void ranking(char imap); // 위와 같음
 
 _Bool check_mapfile(int n,int m) // 맵파일의 박스와 골인지점의 수를 검사하여, 수가 다르다면 오류를 출력함
 {
@@ -149,6 +150,7 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
                     check_error=1;
                 check_box=0;
                 check_goals=0;
+                numberofmap = imap;
                 goto load_map_end;
 
             default:
@@ -234,7 +236,7 @@ void get_player_pos(void) // 플레이어의 위치를 찾는 함수
     }
 }
 
-void check_goals(int imap) // Checking
+void check_goals(int imap) // 박스가 최종위치에 다 들어가 있는지 확인하는 함수
 {
     int goals_achieved = 0;
     for (int iy = 0; iy < checkYsize(imap, checkXsize(imap)); iy++)
@@ -410,7 +412,7 @@ void decide_move(char c, int imap) //앞에 있는 물체를 확인하고 움직
 void printmap(int imap) // 현재 플레이하고 있는 맵을 출력
 {
     system("clear");
-    printf("Hello %s\n\n",name);
+    printf("\nHello %s\n\n",name);
     for (int iy = 0; iy < checkYsize(imap, checkXsize(imap)); iy++)
     {
         for (int ix = 0; ix < checkXsize(imap); ix++)
@@ -451,7 +453,7 @@ void selectmap(int imap) // 플레이할 맵을 선택
     get_player_pos();
 }
 
-void newgame(int imap) // 맵번호를 받아 다시 시작
+void newgame(int imap) // 게임을 다시시작하는 함수
 {
     selectmap(imap);
     printmap(imap);
@@ -470,7 +472,7 @@ void record_history(char move) //플레이어의 움직임을 기록하는 함�
     box_history[4] = is_box_moved;
 }
 
-void undo()
+void undo() // undo 기능을 수행하는 함수
 {
     is_undoing = true;
     decide_move(cmd_history[4], current_map_no);
@@ -522,7 +524,7 @@ void undo()
     box_history[0] = '\0';
 }
 
-void ranking(char imap)
+void ranking(char imap) // ranking 기능을 수행하는 함수
 {
     FILE *ifp;
     ifp = fopen("ranking", "r");
@@ -813,7 +815,7 @@ void ranking(char imap)
     }
 }
 
-void save(void)
+void save(void) // save 기능을 수행하는 함수
 {
     FILE *ofp;
 
@@ -828,7 +830,7 @@ void save(void)
     printf("Save Complete!");
 }
 
-void load(void)
+void load(void) // load 기능을 수행하는 함수
 {
     FILE *ifp;
 
@@ -891,7 +893,7 @@ void load(void)
     printf("Load Complete!");
 }
 
-void display(void)
+void display(void) // display help 기능을 수행하는 함수
 {
     system("clear");
     printf("h(왼쪽), j(아래), k(위), l(오른쪽)\n"
@@ -905,7 +907,7 @@ void display(void)
            "t(top)");
 }
 
-int main(void)
+int main(void) // 프로그램의 메인 함수
 {
     char command;
 
@@ -951,6 +953,7 @@ int main(void)
                 break;
 
             case 'n':
+                current_map_no = 0;
                 newgame(0);
                 move_count=0;
                 break;
@@ -975,6 +978,7 @@ int main(void)
                 break;
 
             case 'e':
+                save();
                 goto end;
                 break;
 
@@ -990,7 +994,7 @@ int main(void)
         if (noinfor == 1)
             continue;
 
-        if (current_map_no == 5)
+        if (current_map_no > numberofmap)
         {
             system("clear");
             printf("You Win!!\n");
@@ -1000,8 +1004,9 @@ int main(void)
 
         printf("\nMove_count:%d\n", move_count);
     }
+
     end:
     system("clear");
-    printf("See You %s\n", name);
+    printf("\nSee You %s\n", name);
     return 0;
 }

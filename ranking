@@ -1,30 +1,30 @@
 %map1
-TEST1:100^
-TEST2:102^
-TEST3:103^
-TEST4:104^
- :0^
+12345:8^
+zxcvdf:8^
+zxcv:8^
+zxcv:8^
+zxcv:8^
 %map2
-TEST1:99^
-TEST2:103^
-TEST3:104^
- :0^
- :0^
+mansuiki:8^
+tester:8^
+tet:9^
+test22:10^
+12345:10^
 %map3
- :0^
- :0^
- :0^
- :0^
- :0^
+tester:17^
+tet:19^
+12345:20^
+zxcvdf:20^
+zxcv:22^
 %map4
- :0^
- :0^
- :0^
- :0^
- :0^
+tester:24^
+12345:26^
+tet:26^
+mansuiki:27^
+test22:28^
 %map5
- :0^
- :0^
- :0^
- :0^
- :0^
+test22:13^
+12345:13^
+zxcvdf:13^
+tet:13^
+mansuiki:16^
