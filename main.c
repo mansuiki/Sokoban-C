@@ -9,7 +9,7 @@ char nowPlayMap[30][30] =  {'\0', }; // 현재 플레이하고 있는 맵을 저
 int current_player_pos[2]; // 플레이어의 위치를 저장하는 변수
 int current_goals = 0; //목표지점의 개수
 int current_map_no; // 현재 플레이하는 맵
-_Bool check_error = 0, is_undoing; // 에러를 체크하는 변수와, undo를 하고 있는지 상태를 저장하는 변수
+_Bool check_error = 0; // 에러를 체크하는 변수
 char name[10] = {'\0'}; //사용자 이름을 받는 변수
 unsigned move_count=0; // 순위표에서 사용할 변수
 int numberofmap = 0; // 전체 맵개수를 저장하는 변수
@@ -18,7 +18,6 @@ _Bool is_box_moved = 0; // 박스가 움직였는지 저장하는 변수
 
 char cmd_history[5] = {'\0'}; //움직임 명령을 반대로 기록해서 5개 저장하는 스택 변수
 _Bool box_history[5]; // 박스 움직임을 저장하는 변수
-
 
 void selectmap(int imap); // 함수 사용을 위해서 미리 선언함
 void record_history(char move); // 위와 같음
@@ -187,13 +186,13 @@ void load_map(void) // 맵파일에서 데이터를 불러와 temp 에 저장하
     }
 }
 
-int checkXsize(int imap) // 배열의 X 사이즈를 알아내는 함수
+int checkXsize(void) // 배열의 X 사이즈를 알아내는 함수
 {
     int size = 0, iy = 0;
 
     for (int ix = 0; ix <= 29; ix++)
     {
-        if (map[imap][iy][ix] == 'C')
+        if (map[current_map_no][iy][ix] == 'C')
         {
             size = ix;
             break;
@@ -203,14 +202,13 @@ int checkXsize(int imap) // 배열의 X 사이즈를 알아내는 함수
     return size;
 }
 
-int checkYsize(int imap, int Xsize) // 배열의 Y 사이즈를 알아내는 함수
+int checkYsize(void) // 배열의 Y 사이즈를 알아내는 함수
 {
     int size = 0;
-    int ix = Xsize - 1;
 
     for (int iy = 0; iy <= 29; iy++)
     {
-        if (map[imap][iy][ix] == 'C')
+        if (map[current_map_no][iy][0] == 'C')
         {
             size = iy;
             break;
@@ -222,9 +220,9 @@ int checkYsize(int imap, int Xsize) // 배열의 Y 사이즈를 알아내는 함
 
 void get_player_pos(void) // 플레이어의 위치를 찾는 함수
 {
-    for (int iy = 0; iy < checkYsize(current_map_no, checkXsize(current_map_no)); iy++)
+    for (int iy = 0; iy < checkYsize(); iy++)
     {
-        for (int ix = 0; ix < checkXsize(current_map_no); ix++)
+        for (int ix = 0; ix < checkXsize(); ix++)
         {
             switch(nowPlayMap[iy][ix])
             {
@@ -236,14 +234,14 @@ void get_player_pos(void) // 플레이어의 위치를 찾는 함수
     }
 }
 
-void check_goals(int imap) // 박스가 최종위치에 다 들어가 있는지 확인하는 함수
+void check_goals(void) // 박스가 최종위치에 다 들어가 있는지 확인하는 함수
 {
     int goals_achieved = 0;
-    for (int iy = 0; iy < checkYsize(imap, checkXsize(imap)); iy++)
+    for (int iy = 0; iy < checkYsize(); iy++)
     {
-        for (int ix = 0; ix < checkXsize(imap); ix++)
+        for (int ix = 0; ix < checkXsize(); ix++)
         {
-            if ((nowPlayMap[iy][ix] == '$') && (map[imap][iy][ix] == 'O'))
+            if ((nowPlayMap[iy][ix] == '$') && (map[current_map_no][iy][ix] == 'O'))
                 goals_achieved ++;
         }
     }
@@ -256,9 +254,9 @@ void check_goals(int imap) // 박스가 최종위치에 다 들어가 있는지 
     }
 }
 
-void move_player(char move, int imap) // 플레이어를 움직이는 함수
+void move_player(char move) // 플레이어를 움직이는 함수
 {
-    if(map[imap][current_player_pos[1]][current_player_pos[0]]=='O') // 만약 플레이어가 있던 위치가 원래는 O 였으면(대문자 o)
+    if(map[current_map_no][current_player_pos[1]][current_player_pos[0]]=='O') // 만약 플레이어가 있던 위치가 원래는 O 였으면(대문자 o)
     {
         nowPlayMap[current_player_pos[1]][current_player_pos[0]] = 'O'; // O 로 변경
     }
@@ -271,29 +269,29 @@ void move_player(char move, int imap) // 플레이어를 움직이는 함수
     {
         case 'h':// 좌
             current_player_pos[0]-=1;
-            if (!is_undoing) record_history('l');
+            record_history('l');
             break;
         case 'j':// 하
             current_player_pos[1]+=1;
-            if (!is_undoing) record_history('k');
+            record_history('k');
             break;
         case 'k':// 상
             current_player_pos[1]-=1;
-            if (!is_undoing) record_history('j');
+            record_history('j');
             break;
         case 'l' :// 우
             current_player_pos[0]+=1;
-            if (!is_undoing) record_history('h');
+            record_history('h');
             break;
     }
   
     // 골뱅이 위치를 새로 찍어주고
     nowPlayMap[current_player_pos[1]][current_player_pos[0]] = '@';
 
-    check_goals(imap); //플레이어가 움직일 때마다 골 여부 확인
+    check_goals(); //플레이어가 움직일 때마다 골 여부 확인
 }
 
-void move_box(char c, int imap) // 플레이어 이동방향 앞에 박스가 존재할경우를 검사. 박스의 앞에 벽이나 또다른 박스가 있다면 움직이지 않습니다.
+void move_box(char c) // 플레이어 이동방향 앞에 박스가 존재할경우를 검사. 박스의 앞에 벽이나 또다른 박스가 있다면 움직이지 않습니다.
 {
     switch (c)
     {
@@ -301,56 +299,56 @@ void move_box(char c, int imap) // 플레이어 이동방향 앞에 박스가 �
             if (nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] != '#' && nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] != '$' )
             {
                 nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] = '$';
-                if (!is_undoing) is_box_moved = 1;
-                move_player(c,imap);
+                is_box_moved = 1;
+                move_player(c);
             }
             else
             {
-                if (!is_undoing) is_box_moved = 0;
+                is_box_moved = 0;
             }
             break;
         case 'j':// 하
             if ((nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] != '#' && nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] != '$' ))
             {
                 nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] = '$';
-                if (!is_undoing) is_box_moved = 1;;
-                move_player(c,imap);
+                is_box_moved = 1;;
+                move_player(c);
             }
             else
             {
-                if (!is_undoing) is_box_moved = 0;
+                is_box_moved = 0;
             }
             break;
         case 'k':// 상
             if ((nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] != '#' && nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] != '$' ))
             {
                 nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] = '$';
-                if (!is_undoing) is_box_moved = 1;
-                move_player(c,imap);
+                is_box_moved = 1;
+                move_player(c);
             }
             else
             {
-                if (!is_undoing) is_box_moved = 0;
+                is_box_moved = 0;
             }
             break;
         case 'l' :// 우
             if ((nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] != '#' && nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] != '$' ))
             {
                 nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] = '$';
-                if (!is_undoing) is_box_moved = 1;
-                move_player(c,imap);
+                is_box_moved = 1;
+                move_player(c);
             }
             else
             {
-                if (!is_undoing) is_box_moved = 0;
+                is_box_moved = 0;
             }
             break;
     }
 
-    if (!is_undoing) is_box_moved = 0;
+    is_box_moved = 0;
 }
 
-void decide_move(char c, int imap) //앞에 있는 물체를 확인하고 움직임 여부를 결정하는 함수
+void decide_move(char c) //앞에 있는 물체를 확인하고 움직임 여부를 결정하는 함수
 {
     switch (c)
     {
@@ -359,11 +357,11 @@ void decide_move(char c, int imap) //앞에 있는 물체를 확인하고 움직
             {
                 if(nowPlayMap[current_player_pos[1]][current_player_pos[0]-1] == '$')
                 {
-                    move_box(c, imap);
+                    move_box(c);
                 }
                 else
                 {
-                    move_player(c, imap);
+                    move_player(c);
                 }
             }
             break;
@@ -372,11 +370,11 @@ void decide_move(char c, int imap) //앞에 있는 물체를 확인하고 움직
             {
                 if (nowPlayMap[current_player_pos[1]+1][current_player_pos[0]] == '$')
                 {
-                    move_box(c, imap);
+                    move_box(c);
                 }
                 else
                 {
-                    move_player(c, imap);
+                    move_player(c);
                 }
             }
             break;
@@ -385,11 +383,11 @@ void decide_move(char c, int imap) //앞에 있는 물체를 확인하고 움직
             {
                 if (nowPlayMap[current_player_pos[1]-1][current_player_pos[0]] == '$')
                 {
-                    move_box(c, imap);
+                    move_box(c);
                 }
                 else
                 {
-                    move_player(c, imap);
+                    move_player(c);
                 }
             }
             break;
@@ -398,11 +396,11 @@ void decide_move(char c, int imap) //앞에 있는 물체를 확인하고 움직
             {
                 if (nowPlayMap[current_player_pos[1]][current_player_pos[0]+1] == '$')
                 {
-                    move_box(c, imap);
+                    move_box(c);
                 }
                 else
                 {
-                    move_player(c, imap);
+                    move_player(c);
                 }
             }
             break;
@@ -413,9 +411,9 @@ void printmap(int imap) // 현재 플레이하고 있는 맵을 출력
 {
     system("clear");
     printf("\nHello %s\n\n",name);
-    for (int iy = 0; iy < checkYsize(imap, checkXsize(imap)); iy++)
+    for (int iy = 0; iy < checkYsize(); iy++)
     {
-        for (int ix = 0; ix < checkXsize(imap); ix++)
+        for (int ix = 0; ix < checkXsize(); ix++)
         {
             printf("%c", nowPlayMap[iy][ix]);
         }
@@ -437,9 +435,9 @@ void selectmap(int imap) // 플레이할 맵을 선택
 
     current_goals = 0;
 
-    for (int iy = 0; iy < checkYsize(imap, checkXsize(imap)); iy++)
+    for (int iy = 0; iy < checkYsize(); iy++)
     {
-        for (int ix = 0; ix < checkXsize(imap); ix++)
+        for (int ix = 0; ix < checkXsize(); ix++)
         {
             nowPlayMap[iy][ix] = map[imap][iy][ix];
             if(map[imap][iy][ix]=='.')
@@ -472,11 +470,38 @@ void record_history(char move) //플레이어의 움직임을 기록하는 함�
     box_history[4] = is_box_moved;
 }
 
-void undo() // undo 기능을 수행하는 함수
+void undo(void) // undo 기능을 수행하는 함수
 {
-    is_undoing = true;
-    decide_move(cmd_history[4], current_map_no);
+    //사용자 위치 undo
+    if(map[current_map_no][current_player_pos[1]][current_player_pos[0]]=='O') // 만약 플레이어가 있던 위치가 원래는 O 였으면(대문자 o)
+    {
+        nowPlayMap[current_player_pos[1]][current_player_pos[0]] = 'O'; // O 로 변경
+    }
+    else
+    {
+        nowPlayMap[current_player_pos[1]][current_player_pos[0]] = ' '; // 아니면 공백으로 변경
+    }
 
+    switch (cmd_history[4])
+    {
+        case 'h':// 좌
+            current_player_pos[0]-=1;
+            break;
+        case 'j':// 하
+            current_player_pos[1]+=1;
+            break;
+        case 'k':// 상
+            current_player_pos[1]-=1;
+            break;
+        case 'l' :// 우
+            current_player_pos[0]+=1;
+            break;
+    }
+  
+    // 골뱅이 위치를 새로 찍어주고
+    nowPlayMap[current_player_pos[1]][current_player_pos[0]] = '@';
+
+    //박스 위치 undo
     if (box_history[4])
     {
         switch (cmd_history[4])
@@ -822,7 +847,7 @@ void save(void) // save 기능을 수행하는 함수
     ofp = fopen("sokoban","w+");
     fprintf(ofp, "%s\t%d\t%d\t%d\t%d\t%d\n", name, move_count, current_map_no, current_goals, current_player_pos[0], current_player_pos[1]);
 
-    for (int i = 0; i <= checkYsize(current_map_no, checkXsize(current_map_no)); i++)
+    for (int i = 0; i <= checkYsize(); i++)
         fprintf(ofp, "%s\n", nowPlayMap[i]);
 
     fclose(ofp);
@@ -893,7 +918,7 @@ void load(void) // load 기능을 수행하는 함수
     printf("Load Complete!");
 }
 
-void display(void) // display help 기능을 수행하는 함수
+void display_help(void) // display help 기능을 수행하는 함수
 {
     system("clear");
     printf("h(왼쪽), j(아래), k(위), l(오른쪽)\n"
@@ -936,9 +961,8 @@ int main(void) // 프로그램의 메인 함수
             case 'k':
             case 'l':
                 get_player_pos();
-                is_undoing = false;
                 move_count++;
-                decide_move(command, current_map_no);
+                decide_move(command);
                 printmap(current_map_no);
                 break;
 
@@ -967,7 +991,7 @@ int main(void) // 프로그램의 메인 함수
                 break;
 
             case 'd':
-                display();
+                display_help();
                 noinfor = 1;
                 break;
 
