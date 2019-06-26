@@ -1,5 +1,7 @@
 # Sokoban Game With C
 
+제출한 commit: [`be72c7974a7ab25c8d51fa35138da8957d57406d`](https://github.com/mansuiki/Sokoban-C/tree/be72c7974a7ab25c8d51fa35138da8957d57406d)
+
 |  조원   |    학번    |                              Github                               |                          역할                          |
 | :---: | :------: | :---------------------------------------------------------------: | :--------------------------------------------------: |
 |  김경택  | 20192805 |              [mansuiki](https://github.com/mansuiki)              | load_map, checkXYsize, ranking, save & load, display |
