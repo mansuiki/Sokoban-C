@@ -293,59 +293,30 @@ void move_player(char move) // 플레이어를 움직이는 함수
 
 void move_box(char c) // 플레이어 이동방향 앞에 박스가 존재할경우를 검사. 박스의 앞에 벽이나 또다른 박스가 있다면 움직이지 않습니다.
 {
+    int move_x = 0, move_y = 0;
+
     switch (c)
     {
         case 'h':// 좌
-            if (nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] != '#' && nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] != '$' )
-            {
-                nowPlayMap[current_player_pos[1]][current_player_pos[0]-2] = '$';
-                is_box_moved = 1;
-                move_player(c);
-            }
-            else
-            {
-                is_box_moved = 0;
-            }
+            move_x = -2;
             break;
         case 'j':// 하
-            if ((nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] != '#' && nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] != '$' ))
-            {
-                nowPlayMap[current_player_pos[1]+2][current_player_pos[0]] = '$';
-                is_box_moved = 1;;
-                move_player(c);
-            }
-            else
-            {
-                is_box_moved = 0;
-            }
+            move_y = 2;
             break;
         case 'k':// 상
-            if ((nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] != '#' && nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] != '$' ))
-            {
-                nowPlayMap[current_player_pos[1]-2][current_player_pos[0]] = '$';
-                is_box_moved = 1;
-                move_player(c);
-            }
-            else
-            {
-                is_box_moved = 0;
-            }
+            move_y = -2;
             break;
         case 'l' :// 우
-            if ((nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] != '#' && nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] != '$' ))
-            {
-                nowPlayMap[current_player_pos[1]][current_player_pos[0]+2] = '$';
-                is_box_moved = 1;
-                move_player(c);
-            }
-            else
-            {
-                is_box_moved = 0;
-            }
+            move_x = 2;
             break;
     }
 
-    is_box_moved = 0;
+    is_box_moved = nowPlayMap[current_player_pos[1]+move_y][current_player_pos[0]+move_x] != '#' && nowPlayMap[current_player_pos[1]+move_y][current_player_pos[0]+move_x] != '$';
+    if (is_box_moved)
+    {
+        nowPlayMap[current_player_pos[1]+move_y][current_player_pos[0]+move_x] = '$';
+        move_player(c);
+    }
 }
 
 void decide_move(char c) //앞에 있는 물체를 확인하고 움직임 여부를 결정하는 함수
